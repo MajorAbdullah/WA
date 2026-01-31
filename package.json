@@ -1,0 +1,49 @@
+{
+  "name": "whatsapp-bot",
+  "version": "1.0.0",
+  "description": "WhatsApp chatbot using Baileys with anti-ban protection",
+  "main": "dist/index.js",
+  "scripts": {
+    "dev": "nodemon",
+    "build": "tsc",
+    "start": "node dist/index.js",
+    "clean": "npx ts-node scripts/cli.ts clean",
+    "clean:auth": "npx ts-node scripts/cli.ts clean:auth",
+    "clean:logs": "npx ts-node scripts/cli.ts clean:logs",
+    "clean:dist": "npx ts-node scripts/cli.ts clean:dist",
+    "status": "npx ts-node scripts/cli.ts status",
+    "config": "npx ts-node scripts/cli.ts config",
+    "config:check": "npx ts-node scripts/cli.ts config:check",
+    "info": "npx ts-node scripts/cli.ts info",
+    "cli": "npx ts-node scripts/cli.ts",
+    "help": "npx ts-node scripts/cli.ts help",
+    "lint": "eslint src/**/*.ts",
+    "typecheck": "tsc --noEmit"
+  },
+  "keywords": [
+    "whatsapp",
+    "bot",
+    "baileys",
+    "chatbot",
+    "anti-ban"
+  ],
+  "author": "",
+  "license": "MIT",
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "dependencies": {
+    "@whiskeysockets/baileys": "^7.0.0-rc.9",
+    "dotenv": "^17.2.3",
+    "pino": "^10.3.0",
+    "pino-pretty": "^13.1.3",
+    "qrcode-terminal": "^0.12.0"
+  },
+  "devDependencies": {
+    "@types/node": "^25.1.0",
+    "@types/qrcode-terminal": "^0.12.2",
+    "nodemon": "^3.1.11",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.9.3"
+  }
+}
