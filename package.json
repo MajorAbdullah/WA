@@ -1,8 +1,18 @@
 {
-  "name": "whatsapp-bot",
+  "name": "wa-bot-cli",
   "version": "1.0.0",
-  "description": "WhatsApp chatbot using Baileys with anti-ban protection",
+  "description": "A powerful, anti-ban protected WhatsApp bot CLI built with Baileys",
   "main": "dist/index.js",
+  "bin": {
+    "wa-bot": "dist/index.js"
+  },
+  "types": "dist/index.d.ts",
+  "files": [
+    "dist",
+    "docs",
+    ".env.example",
+    "README.md"
+  ],
   "scripts": {
     "dev": "nodemon",
     "build": "tsc",
@@ -18,17 +28,30 @@
     "cli": "npx ts-node scripts/cli.ts",
     "help": "npx ts-node scripts/cli.ts help",
     "lint": "eslint src/**/*.ts",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "prepublishOnly": "npm run build"
   },
   "keywords": [
     "whatsapp",
     "bot",
     "baileys",
     "chatbot",
-    "anti-ban"
+    "anti-ban",
+    "whatsapp-bot",
+    "whatsapp-api",
+    "cli",
+    "automation"
   ],
-  "author": "",
+  "author": "MajorAbdullah",
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/MajorAbdullah/WA.git"
+  },
+  "bugs": {
+    "url": "https://github.com/MajorAbdullah/WA/issues"
+  },
+  "homepage": "https://github.com/MajorAbdullah/WA#readme",
   "engines": {
     "node": ">=18.0.0"
   },

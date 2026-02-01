@@ -1,3 +1,4 @@
+#!/usr/bin/env node
 import { config, validateConfig } from './config'
 import { logger } from './utils/logger'
 import {
