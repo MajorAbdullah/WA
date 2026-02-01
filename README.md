@@ -1,27 +1,44 @@
-# WhatsApp Bot
+<div align="center">
 
-A powerful, anti-ban protected WhatsApp bot built with [Baileys](https://github.com/WhiskeySockets/Baileys) library.
+# 💬 WhatsApp Bot CLI
 
-## Features
+### A powerful, anti-ban protected WhatsApp bot
 
-- **Multiple Authentication Methods**: QR code or pairing code (phone number)
-- **Anti-Ban Protection**: Rate limiting, typing simulation, human-like delays
-- **Session Persistence**: Automatic session save/restore
-- **Auto-Reconnection**: Handles disconnects with exponential backoff
-- **Command System**: Extensible command framework with permissions
-- **User Management**: Ban/unban users, track interactions
-- **Message Queue**: Priority-based message queuing with retry logic
-- **Duplicate Detection**: Prevents spam with similarity matching
+[![Node.js](https://img.shields.io/badge/Node.js-18%2B-339933?style=for-the-badge&logo=nodedotjs&logoColor=white)](https://nodejs.org/)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5.0-3178C6?style=for-the-badge&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
+[![Baileys](https://img.shields.io/badge/Baileys-Latest-25D366?style=for-the-badge&logo=whatsapp&logoColor=white)](https://github.com/WhiskeySockets/Baileys)
+[![License](https://img.shields.io/badge/License-MIT-yellow?style=for-the-badge)](LICENSE)
 
-## Quick Start
+<p align="center">
+  <a href="#-features">Features</a> •
+  <a href="#-quick-start">Quick Start</a> •
+  <a href="#-commands">Commands</a> •
+  <a href="#-documentation">Documentation</a>
+</p>
 
-### Prerequisites
+---
 
-- Node.js 18+
-- npm or yarn
-- WhatsApp account
+</div>
 
-### Installation
+## ✨ Features
+
+<table>
+<tr>
+<td>
+
+---
+
+## 🚀 Quick Start
+
+### 📋 Prerequisites
+
+| Requirement                                                                                             | Version        |
+| ------------------------------------------------------------------------------------------------------- | -------------- |
+| ![Node.js](https://img.shields.io/badge/Node.js-339933?style=flat-square&logo=nodedotjs&logoColor=white)  | 18+            |
+| ![npm](https://img.shields.io/badge/npm-CB3837?style=flat-square&logo=npm&logoColor=white)                | Latest         |
+| ![WhatsApp](https://img.shields.io/badge/WhatsApp-25D366?style=flat-square&logo=whatsapp&logoColor=white) | Active Account |
+
+### 📦 Installation
 
 ```bash
 # Clone the repository
@@ -38,7 +55,7 @@ cp .env.example .env
 nano .env
 ```
 
-### Configuration
+### ⚙️ Configuration
 
 Edit `.env` file:
 
@@ -53,7 +70,7 @@ USE_PAIRING_CODE=false    # Set to true for phone number auth
 PHONE_NUMBER=1234567890   # Required if USE_PAIRING_CODE=true
 ```
 
-### Running the Bot
+### ▶️ Running the Bot
 
 ```bash
 # Development mode (with hot reload)
@@ -64,31 +81,37 @@ npm run build
 npm start
 ```
 
-### Authentication
+### 🔑 Authentication
 
 **QR Code (default)**:
+
 1. Run `npm run dev`
 2. Scan the QR code with WhatsApp (Settings > Linked Devices > Link a Device)
 
 **Pairing Code** (alternative):
+
 1. Set `USE_PAIRING_CODE=true` and `PHONE_NUMBER=your_number` in `.env`
 2. Run `npm run dev`
 3. Enter the 8-digit code in WhatsApp (Settings > Linked Devices > Link with phone number)
 
-## Commands
+---
 
-| Command | Description | Access |
-|---------|-------------|--------|
-| `!ping` | Check if bot is responsive | Everyone |
-| `!help` | List all available commands | Everyone |
-| `!info` | Show bot information | Everyone |
-| `!uptime` | Show bot uptime | Everyone |
-| `!stats` | Show detailed statistics | Owner |
-| `!ban @user` | Ban a user from using the bot | Owner |
-| `!broadcast <msg>` | Broadcast message to all chats | Owner |
-| `!reload` | Reload commands without restart | Owner |
+## 📝 Commands
 
-## Project Structure
+| Command              | Description                     | Access      |
+| -------------------- | ------------------------------- | ----------- |
+| `!ping`            | Check if bot is responsive      | 🌐 Everyone |
+| `!help`            | List all available commands     | 🌐 Everyone |
+| `!info`            | Show bot information            | 🌐 Everyone |
+| `!uptime`          | Show bot uptime                 | 🌐 Everyone |
+| `!stats`           | Show detailed statistics        | 👑 Owner    |
+| `!ban @user`       | Ban a user from using the bot   | 👑 Owner    |
+| `!broadcast <msg>` | Broadcast message to all chats  | 👑 Owner    |
+| `!reload`          | Reload commands without restart | 👑 Owner    |
+
+---
+
+## 📁 Project Structure
 
 ```
 WA/
@@ -106,24 +129,35 @@ WA/
 └── scripts/             # CLI tools
 ```
 
-## Use Cases
+---
+
+## 💡 Use Cases
 
 See [docs/USE-CASES.md](docs/USE-CASES.md) for detailed use cases including:
-- Customer Support Bot
-- Notification System
-- Group Management
-- Personal Assistant
-- E-commerce Integration
 
-## Documentation
+| Use Case               | Description                    |
+| ---------------------- | ------------------------------ |
+| 🎧 Customer Support    | Automated customer service bot |
+| 🔔 Notification System | Send alerts and notifications  |
+| 👥 Group Management    | Manage WhatsApp groups         |
+| 🤖 Personal Assistant  | AI-powered personal helper     |
+| 🛒 E-commerce          | Order tracking and support     |
 
-- [Configuration Guide](docs/CONFIGURATION.md)
-- [Commands Reference](docs/COMMANDS.md)
-- [Use Cases](docs/USE-CASES.md)
-- [API Reference](docs/API.md)
-- [Troubleshooting](docs/TROUBLESHOOTING.md)
+---
 
-## CLI Commands
+## 📚 Documentation
+
+| Document                                    | Description               |
+| ------------------------------------------- | ------------------------- |
+| 📖[Configuration Guide](docs/CONFIGURATION.md) | All configuration options |
+| 📋[Commands Reference](docs/COMMANDS.md)       | Complete command list     |
+| 💡[Use Cases](docs/USE-CASES.md)               | Implementation examples   |
+| 🔧[API Reference](docs/API.md)                 | Developer API docs        |
+| 🔍[Troubleshooting](docs/TROUBLESHOOTING.md)   | Common issues & fixes     |
+
+---
+
+## 🖥️ CLI Commands
 
 ```bash
 npm run dev          # Start in development mode
@@ -135,33 +169,61 @@ npm run status       # Check bot status
 npm run config       # Show current configuration
 ```
 
-## Anti-Ban Features
+---
+
+## 🛡️ Anti-Ban Features
 
 This bot includes multiple anti-ban protections:
 
-1. **Rate Limiting**: Per-user, per-group, and global limits
-2. **Response Delays**: Randomized delays (2-5 seconds)
-3. **Typing Simulation**: Shows typing indicator before responding
-4. **Duplicate Detection**: Prevents sending duplicate messages
-5. **Presence Updates**: Periodic online status updates
-6. **Message Queue**: Spreads messages over time
+```
+┌─────────────────────────────────────────────────────────────────┐
+│                     ANTI-BAN PROTECTION LAYERS                  │
+├─────────────────────────────────────────────────────────────────┤
+│  ⏱️  Rate Limiting      │  Per-user, per-group, and global     │
+│  ⏳  Response Delays    │  Randomized delays (2-5 seconds)      │
+│  ⌨️  Typing Simulation  │  Shows typing indicator               │
+│  🔍  Duplicate Detection│  Prevents sending duplicates          │
+│  🟢  Presence Updates   │  Periodic online status updates       │
+│  📬  Message Queue      │  Spreads messages over time           │
+└─────────────────────────────────────────────────────────────────┘
+```
 
-## Environment Variables
+---
+
+## 🔐 Environment Variables
 
 See [docs/CONFIGURATION.md](docs/CONFIGURATION.md) for all available options.
 
-## Contributing
+---
 
-1. Fork the repository
-2. Create your feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit your changes (`git commit -m 'Add amazing feature'`)
-4. Push to the branch (`git push origin feature/amazing-feature`)
-5. Open a Pull Request
+## 🤝 Contributing
 
-## License
+Contributions are welcome! Here's how to get started:
 
-This project is licensed under the MIT License.
+1. 🍴 Fork the repository
+2. 🌿 Create your feature branch (`git checkout -b feature/amazing-feature`)
+3. 💾 Commit your changes (`git commit -m 'Add amazing feature'`)
+4. 📤 Push to the branch (`git push origin feature/amazing-feature`)
+5. 🔃 Open a Pull Request
 
-## Disclaimer
+---
 
-This bot is for educational purposes. Use responsibly and in accordance with WhatsApp's Terms of Service. The developers are not responsible for any misuse or account bans.
+## 📄 License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+---
+
+## ⚠️ Disclaimer
+
+> **Note**: This bot is for educational purposes only. Use responsibly and in accordance with WhatsApp's Terms of Service. The developers are not responsible for any misuse or account bans.
+
+---
+
+<div align="center">
+
+**Built with ❤️ using [Baileys](https://github.com/WhiskeySockets/Baileys)**
+
+[![Star this repo](https://img.shields.io/github/stars/your-username/WA?style=social)](https://github.com/your-username/WA)
+
+</div>
