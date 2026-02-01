@@ -5,6 +5,7 @@
 ### A powerful, anti-ban protected WhatsApp bot
 
 [![npm version](https://img.shields.io/npm/v/@syed-abdullah-shah/wa-bot-cli?style=for-the-badge&logo=npm&logoColor=white&color=CB3837)](https://www.npmjs.com/package/@syed-abdullah-shah/wa-bot-cli)
+[![GitHub Package](https://img.shields.io/badge/GitHub%20Package-1.0.0-181717?style=for-the-badge&logo=github&logoColor=white)](https://github.com/MajorAbdullah/WA/pkgs/npm/wa-bot-cli)
 [![Node.js](https://img.shields.io/badge/Node.js-18%2B-339933?style=for-the-badge&logo=nodedotjs&logoColor=white)](https://nodejs.org/)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.0-3178C6?style=for-the-badge&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
 [![Baileys](https://img.shields.io/badge/Baileys-Latest-25D366?style=for-the-badge&logo=whatsapp&logoColor=white)](https://github.com/WhiskeySockets/Baileys)

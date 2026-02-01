@@ -1,5 +1,5 @@
 {
-  "name": "@syed-abdullah-shah/wa-bot-cli",
+  "name": "@majorabdullah/wa-bot-cli",
   "version": "1.0.0",
   "description": "A powerful, anti-ban protected WhatsApp bot CLI built with Baileys",
   "main": "dist/index.js",
@@ -52,6 +52,9 @@
     "url": "https://github.com/MajorAbdullah/WA/issues"
   },
   "homepage": "https://github.com/MajorAbdullah/WA#readme",
+  "publishConfig": {
+    "registry": "https://npm.pkg.github.com"
+  },
   "engines": {
     "node": ">=18.0.0"
   },
