@@ -224,6 +224,4 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 **Built with ❤️ using [Baileys](https://github.com/WhiskeySockets/Baileys)**
 
-[![Star this repo](https://img.shields.io/github/stars/your-username/WA?style=social)](https://github.com/your-username/WA)
-
 </div>
