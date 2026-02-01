@@ -2,7 +2,7 @@
 
 ## Overview
 
-A modern web dashboard for managing and monitoring WhatsApp bots powered by `@majorabdullah/wa-bot-cli`. This dashboard provides a visual interface to control bot connections, manage users, view analytics, configure settings, and monitor real-time message activity.
+A modern web dashboard for managing and monitoring WhatsApp bots powered by `@syed-abdullah-shah/wa-bot-cli`. This dashboard provides a visual interface to control bot connections, manage users, view analytics, configure settings, and monitor real-time message activity.
 
 ---
 
@@ -12,16 +12,39 @@ A modern web dashboard for managing and monitoring WhatsApp bots powered by `@ma
 |-------|------------|---------|
 | **Framework** | Next.js 14+ (App Router) | Full-stack React framework |
 | **Language** | TypeScript | Type safety |
-| **Styling** | Tailwind CSS | Utility-first CSS |
+| **Styling** | Tailwind CSS + Brand CSS | Utility-first + Design tokens |
 | **UI Components** | shadcn/ui | Accessible, customizable components |
 | **Icons** | Lucide React | Modern icon library |
 | **State Management** | Zustand | Lightweight global state |
 | **Real-time** | Socket.io | WebSocket for live updates |
 | **Charts** | Recharts | Data visualization |
 | **Forms** | React Hook Form + Zod | Form handling & validation |
-| **Bot Engine** | @majorabdullah/wa-bot-cli | WhatsApp bot core |
+| **Bot Engine** | @syed-abdullah-shah/wa-bot-cli | WhatsApp bot core (npm) |
 | **Database** | SQLite (better-sqlite3) | Local data persistence |
 | **Auth** | NextAuth.js | Dashboard authentication |
+
+---
+
+## Brand Guidelines
+
+All styling must use the centralized brand CSS located at `src/styles/brand.css`.
+
+### Key Design Tokens
+- **Primary Color**: `--brand-primary: #25D366` (WhatsApp Green)
+- **Font**: `--font-sans: 'Inter', system fonts`
+- **Border Radius**: `--border-radius-lg: 0.5rem`
+- **Spacing**: Use `--space-*` variables (1-16)
+
+### Usage
+```tsx
+// Import in components or globals.css
+import '@/styles/brand.css';
+
+// Use CSS variables
+<div style={{ color: 'var(--brand-primary)' }}>
+<div className="text-brand bg-brand-dark">
+<div className="dashboard-card stats-card">
+```
 
 ---
 
@@ -52,7 +75,7 @@ A modern web dashboard for managing and monitoring WhatsApp bots powered by `@ma
 ┌─────────────────────────────────────────────────────────────────┐
 │                      Bot Service Layer                           │
 │  ┌──────────────────────────────────────────────────────────┐   │
-│  │               @majorabdullah/wa-bot-cli                   │   │
+│  │               @syed-abdullah-shah/wa-bot-cli              │   │
 │  │  ┌─────────┐ ┌──────────┐ ┌──────────┐ ┌──────────────┐  │   │
 │  │  │ Client  │ │Connection│ │ Services │ │   Commands   │  │   │
 │  │  │ Session │ │ Handlers │ │(RateLimit│ │   Registry   │  │   │
@@ -75,293 +98,962 @@ A modern web dashboard for managing and monitoring WhatsApp bots powered by `@ma
 
 ---
 
-## Features Breakdown
+## Parallel Development Phases
 
-### 1. Authentication & Security
-- [ ] Login page with username/password
-- [ ] Session management with JWT
-- [ ] Role-based access (Admin, Viewer)
-- [ ] Protected API routes
-- [ ] Secure WebSocket connections
+The implementation is divided into independent workstreams that can be developed in parallel by different Claude sessions.
 
-### 2. Dashboard Home
-- [ ] Connection status indicator (Connected/Disconnected/Connecting)
-- [ ] QR code display for authentication
-- [ ] Pairing code input option
-- [ ] Quick stats cards:
-  - Messages sent/received today
-  - Active users count
-  - Commands executed
-  - Uptime
-- [ ] Recent activity feed
-- [ ] System health indicators
-
-### 3. Messages View
-- [ ] Real-time message feed (incoming/outgoing)
-- [ ] Message search and filter
-- [ ] Send message form:
-  - Recipient selector (contacts/groups)
-  - Message input with emoji picker
-  - Media attachment support
-- [ ] Message history by contact/group
-- [ ] Export message logs
-
-### 4. Users Management
-- [ ] User list with search/filter
-- [ ] User details view:
-  - Phone number
-  - First seen / Last seen
-  - Message count
-  - Command usage
-  - Ban status
-- [ ] Ban/Unban actions
-- [ ] User activity timeline
-- [ ] Bulk actions (ban multiple, export)
-
-### 5. Groups Management
-- [ ] List all groups bot is in
-- [ ] Group details:
-  - Name, description, member count
-  - Admin list
-  - Bot permissions
-- [ ] Leave group action
-- [ ] Group message history
-- [ ] Group-specific settings
-
-### 6. Commands Management
-- [ ] List all available commands
-- [ ] Command usage statistics
-- [ ] Enable/Disable commands
-- [ ] Command cooldown configuration
-- [ ] Custom command creator (future)
-
-### 7. Analytics & Statistics
-- [ ] Message volume charts (hourly/daily/weekly)
-- [ ] Command usage pie chart
-- [ ] User growth timeline
-- [ ] Rate limit hit frequency
-- [ ] Queue status visualization
-- [ ] Response time metrics
-- [ ] Export reports (CSV/PDF)
-
-### 8. Broadcast Center
-- [ ] Create new broadcast
-- [ ] Select recipients (all users, specific groups, filtered)
-- [ ] Schedule broadcasts
-- [ ] Broadcast history
-- [ ] Delivery status tracking
-
-### 9. Settings Panel
-- [ ] Bot Configuration:
-  - Bot name
-  - Command prefix
-  - Owner number
-- [ ] Rate Limiting:
-  - Per-user limit
-  - Per-group limit
-  - Global limit
-- [ ] Response Settings:
-  - Min/Max delay
-  - Typing speed
-  - Auto-read toggle
-- [ ] Features Toggle:
-  - Enable groups
-  - Typing indicator
-  - Anti-spam
-- [ ] Session Management:
-  - View session info
-  - Logout/Reset session
-  - Backup session
-
-### 10. Logs Viewer
-- [ ] Real-time log streaming
-- [ ] Filter by log level (info, warn, error)
-- [ ] Search logs
-- [ ] Download log files
-- [ ] Log retention settings
-
-### 11. Notifications
-- [ ] In-app notifications for:
-  - New messages
-  - Connection status changes
-  - Errors
-  - Rate limit warnings
-- [ ] Browser push notifications (optional)
-- [ ] Email alerts for critical events (optional)
-
----
-
-## Page Structure
+### Dependency Graph
 
 ```
-/                       → Dashboard Home (overview, stats, QR code)
-/messages              → Message Center (live feed, send messages)
-/messages/[id]         → Conversation view with specific contact/group
-/users                 → User Management (list, search, actions)
-/users/[id]            → User Detail page
-/groups                → Groups Management
-/groups/[id]           → Group Detail page
-/commands              → Commands Management
-/analytics             → Analytics & Charts
-/broadcast             → Broadcast Center
-/broadcast/new         → Create new broadcast
-/settings              → Settings Panel
-/settings/bot          → Bot configuration
-/settings/rate-limit   → Rate limiting config
-/settings/session      → Session management
-/logs                  → Log Viewer
-/login                 → Authentication page
+Phase 1 (Foundation) ──────────────────────────────────────────────────┐
+        │                                                               │
+        ├─────────────────┬─────────────────┬─────────────────┐        │
+        ▼                 ▼                 ▼                 ▼        │
+   Phase 2A          Phase 2B          Phase 2C          Phase 2D      │
+   (Database)        (Bot Service)     (WebSocket)       (UI Layout)   │
+        │                 │                 │                 │        │
+        └────────┬────────┴────────┬────────┘                 │        │
+                 ▼                 ▼                          │        │
+            Phase 3A          Phase 3B                        │        │
+            (Messages)        (Users/Groups)                  │        │
+                 │                 │                          │        │
+                 └────────┬────────┘                          │        │
+                          ▼                                   │        │
+                     Phase 4A ◄───────────────────────────────┘        │
+                     (Dashboard Home)                                  │
+                          │                                            │
+        ┌─────────────────┼─────────────────┐                         │
+        ▼                 ▼                 ▼                         │
+   Phase 5A          Phase 5B          Phase 5C                       │
+   (Analytics)       (Commands)        (Broadcast)                    │
+        │                 │                 │                         │
+        └────────┬────────┴────────┬────────┘                         │
+                 ▼                 ▼                                   │
+            Phase 6A          Phase 6B                                │
+            (Settings)        (Logs)                                  │
+                 │                 │                                   │
+                 └────────┬────────┘                                   │
+                          ▼                                            │
+                     Phase 7                                           │
+                     (Auth & Polish)◄──────────────────────────────────┘
 ```
 
 ---
 
-## API Endpoints
+## Phase Details with Claude Prompts
 
-### Bot Control
-```
-GET    /api/bot/status          → Get connection status
-POST   /api/bot/connect         → Initiate connection
-POST   /api/bot/disconnect      → Disconnect bot
-GET    /api/bot/qr              → Get current QR code
-POST   /api/bot/pair            → Request pairing code
-GET    /api/bot/stats           → Get bot statistics
-```
+### Phase 1: Foundation (COMPLETED)
+**Status**: ✅ Complete
+**Dependencies**: None
+**Parallel**: No - Must be done first
 
-### Messages
-```
-GET    /api/messages            → Get message history (paginated)
-GET    /api/messages/:jid       → Get messages for specific chat
-POST   /api/messages/send       → Send a message
-DELETE /api/messages/:id        → Delete a message
-GET    /api/messages/search     → Search messages
-```
-
-### Users
-```
-GET    /api/users               → List all users (paginated)
-GET    /api/users/:id           → Get user details
-POST   /api/users/:id/ban       → Ban a user
-POST   /api/users/:id/unban     → Unban a user
-GET    /api/users/banned        → List banned users
-DELETE /api/users/:id           → Remove user data
-```
-
-### Groups
-```
-GET    /api/groups              → List all groups
-GET    /api/groups/:id          → Get group details
-GET    /api/groups/:id/members  → Get group members
-POST   /api/groups/:id/leave    → Leave a group
-```
-
-### Commands
-```
-GET    /api/commands            → List all commands
-GET    /api/commands/:name      → Get command details
-PATCH  /api/commands/:name      → Update command settings
-GET    /api/commands/stats      → Command usage statistics
-```
-
-### Configuration
-```
-GET    /api/config              → Get current configuration
-PATCH  /api/config              → Update configuration
-POST   /api/config/reset        → Reset to defaults
-```
-
-### Broadcast
-```
-GET    /api/broadcast           → List broadcasts
-POST   /api/broadcast           → Create new broadcast
-GET    /api/broadcast/:id       → Get broadcast status
-DELETE /api/broadcast/:id       → Cancel broadcast
-```
-
-### WebSocket Events
-```
-connection:status      → Bot connection state changes
-message:incoming       → New message received
-message:outgoing       → Message sent
-message:status         → Message delivery status
-user:update            → User data changed
-stats:update           → Statistics updated
-log:entry              → New log entry
-```
+**Completed Tasks**:
+- [x] Create dashboard branch
+- [x] Create implementation plan
+- [x] Initialize Next.js project
+- [x] Setup Tailwind CSS + shadcn/ui
+- [x] Create brand.css with design tokens
+- [x] Install core dependencies
+- [x] Create folder structure
 
 ---
 
-## Database Schema (SQLite)
+### Phase 2A: Database Layer
+**Status**: 🔲 Pending
+**Dependencies**: Phase 1
+**Parallel With**: Phase 2B, 2C, 2D
+**Files**: `src/lib/db/*`
+
+**Claude Prompt**:
+```
+You are working on the WA Bot Dashboard project (branch: dashboard).
+Your task is to implement the SQLite database layer.
+
+## Context
+- Project uses Next.js 14+ with App Router
+- Database: better-sqlite3 (already installed)
+- Location: src/lib/db/
+
+## Tasks
+1. Create src/lib/db/index.ts - Database connection singleton
+2. Create src/lib/db/schema.ts - Table creation scripts
+3. Create src/lib/db/queries.ts - CRUD operations for all tables
+
+## Database Schema (implement these tables):
 
 ### messages
-```sql
-CREATE TABLE messages (
-  id TEXT PRIMARY KEY,
-  jid TEXT NOT NULL,
-  from_me BOOLEAN NOT NULL,
-  content TEXT,
-  type TEXT NOT NULL,
-  timestamp INTEGER NOT NULL,
-  status TEXT,
-  media_url TEXT,
-  created_at DATETIME DEFAULT CURRENT_TIMESTAMP
-);
-CREATE INDEX idx_messages_jid ON messages(jid);
-CREATE INDEX idx_messages_timestamp ON messages(timestamp);
-```
+- id TEXT PRIMARY KEY
+- jid TEXT NOT NULL
+- from_me BOOLEAN NOT NULL
+- content TEXT
+- type TEXT NOT NULL
+- timestamp INTEGER NOT NULL
+- status TEXT
+- media_url TEXT
+- created_at DATETIME DEFAULT CURRENT_TIMESTAMP
 
 ### users
-```sql
-CREATE TABLE users (
-  jid TEXT PRIMARY KEY,
-  name TEXT,
-  phone TEXT,
-  first_seen INTEGER NOT NULL,
-  last_seen INTEGER NOT NULL,
-  message_count INTEGER DEFAULT 0,
-  command_count INTEGER DEFAULT 0,
-  is_banned BOOLEAN DEFAULT FALSE,
-  ban_reason TEXT,
-  created_at DATETIME DEFAULT CURRENT_TIMESTAMP
-);
-```
+- jid TEXT PRIMARY KEY
+- name TEXT
+- phone TEXT
+- first_seen INTEGER NOT NULL
+- last_seen INTEGER NOT NULL
+- message_count INTEGER DEFAULT 0
+- command_count INTEGER DEFAULT 0
+- is_banned BOOLEAN DEFAULT FALSE
+- ban_reason TEXT
+- created_at DATETIME DEFAULT CURRENT_TIMESTAMP
 
 ### broadcasts
-```sql
-CREATE TABLE broadcasts (
-  id TEXT PRIMARY KEY,
-  message TEXT NOT NULL,
-  recipients TEXT NOT NULL, -- JSON array
-  scheduled_at INTEGER,
-  status TEXT NOT NULL, -- pending, in_progress, completed, cancelled
-  sent_count INTEGER DEFAULT 0,
-  failed_count INTEGER DEFAULT 0,
-  created_at DATETIME DEFAULT CURRENT_TIMESTAMP
-);
-```
+- id TEXT PRIMARY KEY
+- message TEXT NOT NULL
+- recipients TEXT NOT NULL (JSON array)
+- scheduled_at INTEGER
+- status TEXT NOT NULL (pending, in_progress, completed, cancelled)
+- sent_count INTEGER DEFAULT 0
+- failed_count INTEGER DEFAULT 0
+- created_at DATETIME DEFAULT CURRENT_TIMESTAMP
 
 ### command_logs
-```sql
-CREATE TABLE command_logs (
-  id INTEGER PRIMARY KEY AUTOINCREMENT,
-  command TEXT NOT NULL,
-  user_jid TEXT NOT NULL,
-  args TEXT,
-  success BOOLEAN NOT NULL,
-  response_time INTEGER,
-  created_at DATETIME DEFAULT CURRENT_TIMESTAMP
-);
-CREATE INDEX idx_command_logs_command ON command_logs(command);
-CREATE INDEX idx_command_logs_created ON command_logs(created_at);
-```
+- id INTEGER PRIMARY KEY AUTOINCREMENT
+- command TEXT NOT NULL
+- user_jid TEXT NOT NULL
+- args TEXT
+- success BOOLEAN NOT NULL
+- response_time INTEGER
+- created_at DATETIME DEFAULT CURRENT_TIMESTAMP
 
 ### settings
-```sql
-CREATE TABLE settings (
-  key TEXT PRIMARY KEY,
-  value TEXT NOT NULL,
-  updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
-);
+- key TEXT PRIMARY KEY
+- value TEXT NOT NULL
+- updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
+
+## Requirements
+- Use TypeScript with proper types
+- Export typed query functions
+- Handle errors gracefully
+- Create indexes for frequently queried columns
+- Add a db:init script to package.json
 ```
+
+---
+
+### Phase 2B: Bot Service Layer
+**Status**: 🔲 Pending
+**Dependencies**: Phase 1
+**Parallel With**: Phase 2A, 2C, 2D
+**Files**: `src/lib/bot/*`
+
+**Claude Prompt**:
+```
+You are working on the WA Bot Dashboard project (branch: dashboard).
+Your task is to create the bot service layer that wraps @syed-abdullah-shah/wa-bot-cli.
+
+## Context
+- Project uses Next.js 14+ with App Router
+- Bot package: @syed-abdullah-shah/wa-bot-cli (already installed)
+- Location: src/lib/bot/
+
+## Tasks
+1. Create src/lib/bot/index.ts - Bot singleton manager
+2. Create src/lib/bot/adapter.ts - Adapter wrapping wa-bot-cli exports
+3. Create src/lib/bot/events.ts - Event emitter for dashboard notifications
+4. Create src/types/bot.ts - TypeScript types for bot state
+
+## Requirements
+
+### Bot Manager (index.ts)
+- Singleton pattern for bot instance
+- Methods: connect(), disconnect(), getStatus(), getStats()
+- Connection state tracking (disconnected, connecting, connected)
+- QR code storage for display
+- Pairing code support
+
+### Adapter (adapter.ts)
+- Wrap wa-bot-cli functions for dashboard use
+- Expose: sendMessage, getUsers, banUser, unbanUser
+- Convert between CLI and dashboard data formats
+
+### Events (events.ts)
+- EventEmitter for real-time updates
+- Events: 'connection', 'message', 'qr', 'stats'
+- Allow subscription from WebSocket handlers
+
+### Types (src/types/bot.ts)
+```typescript
+type ConnectionStatus = 'disconnected' | 'connecting' | 'connected';
+
+interface BotState {
+  status: ConnectionStatus;
+  qrCode: string | null;
+  phoneNumber: string | null;
+  uptime: number;
+}
+
+interface BotStats {
+  messagesReceived: number;
+  messagesSent: number;
+  commandsExecuted: number;
+  errors: number;
+  uptime: number;
+}
+```
+
+## Notes
+- The wa-bot-cli package exports from dist/index.js
+- Check package exports and wrap appropriately
+- Handle cases where bot is not connected
+```
+
+---
+
+### Phase 2C: WebSocket Server
+**Status**: 🔲 Pending
+**Dependencies**: Phase 1
+**Parallel With**: Phase 2A, 2B, 2D
+**Files**: `src/lib/socket/*`, `src/app/api/socket/*`
+
+**Claude Prompt**:
+```
+You are working on the WA Bot Dashboard project (branch: dashboard).
+Your task is to implement the WebSocket server for real-time updates.
+
+## Context
+- Project uses Next.js 14+ with App Router
+- WebSocket: socket.io + socket.io-client (already installed)
+- Location: src/lib/socket/
+
+## Tasks
+1. Create src/lib/socket/server.ts - Socket.io server setup
+2. Create src/lib/socket/events.ts - Event type definitions
+3. Create src/hooks/use-socket.ts - React hook for socket connection
+4. Create src/app/api/socket/route.ts - API route for WebSocket upgrade
+
+## WebSocket Events
+
+### Server -> Client
+- connection:status - Bot connection state changes
+- message:incoming - New message received
+- message:outgoing - Message sent
+- message:status - Message delivery status update
+- user:update - User data changed
+- stats:update - Statistics updated (every 5 seconds)
+- log:entry - New log entry
+
+### Client -> Server
+- bot:connect - Request bot connection
+- bot:disconnect - Request bot disconnection
+- message:send - Send a message
+- subscribe:logs - Subscribe to log updates
+
+## Types (src/lib/socket/events.ts)
+```typescript
+interface ServerToClientEvents {
+  'connection:status': (status: ConnectionStatus) => void;
+  'message:incoming': (message: Message) => void;
+  'message:outgoing': (message: Message) => void;
+  'stats:update': (stats: BotStats) => void;
+  'log:entry': (log: LogEntry) => void;
+}
+
+interface ClientToServerEvents {
+  'bot:connect': () => void;
+  'bot:disconnect': () => void;
+  'message:send': (data: { jid: string; text: string }) => void;
+}
+```
+
+## Requirements
+- Type-safe socket events
+- Auto-reconnection on disconnect
+- Room support for different event types
+- Integration with bot events (Phase 2B)
+```
+
+---
+
+### Phase 2D: UI Layout & Components
+**Status**: 🔄 In Progress
+**Dependencies**: Phase 1
+**Parallel With**: Phase 2A, 2B, 2C
+**Files**: `src/components/layout/*`, `src/app/(dashboard)/layout.tsx`
+
+**Claude Prompt**:
+```
+You are working on the WA Bot Dashboard project (branch: dashboard).
+Your task is to create the main UI layout and shared components.
+
+## Context
+- Project uses Next.js 14+ with App Router
+- Styling: Tailwind CSS + shadcn/ui + brand.css
+- Location: src/components/layout/, src/components/shared/
+
+## Tasks
+1. Complete src/components/layout/sidebar.tsx (started)
+2. Create src/components/layout/header.tsx
+3. Create src/components/layout/nav-item.tsx
+4. Create src/components/layout/user-menu.tsx
+5. Create src/app/(dashboard)/layout.tsx
+6. Create src/components/shared/loading.tsx
+7. Create src/components/shared/error.tsx
+8. Create src/components/shared/empty-state.tsx
+9. Create src/components/shared/pagination.tsx
+10. Create src/stores/ui-store.ts - Sidebar state
+
+## Design Requirements
+- Use brand.css variables for all colors/spacing
+- Sidebar: 256px wide, collapsible to 64px
+- Header: 64px tall, shows page title and user menu
+- Responsive: Sidebar becomes sheet on mobile
+- Dark mode support
+
+## Layout Structure
+```
+┌─────────────────────────────────────────────┐
+│ Header (64px)                     [User ▼]  │
+├──────────┬──────────────────────────────────┤
+│          │                                  │
+│ Sidebar  │         Main Content             │
+│ (256px)  │                                  │
+│          │                                  │
+│ - Home   │                                  │
+│ - Msgs   │                                  │
+│ - Users  │                                  │
+│ - ...    │                                  │
+│          │                                  │
+└──────────┴──────────────────────────────────┘
+```
+
+## Navigation Items
+- Dashboard (/)
+- Messages (/messages)
+- Users (/users)
+- Groups (/groups)
+- Commands (/commands)
+- Analytics (/analytics)
+- Broadcast (/broadcast)
+- Settings (/settings)
+- Logs (/logs)
+
+## Zustand Store (ui-store.ts)
+```typescript
+interface UIStore {
+  sidebarOpen: boolean;
+  sidebarCollapsed: boolean;
+  toggleSidebar: () => void;
+  collapseSidebar: () => void;
+}
+```
+```
+
+---
+
+### Phase 3A: Messages Feature
+**Status**: 🔲 Pending
+**Dependencies**: Phase 2A (Database), Phase 2B (Bot Service), Phase 2C (WebSocket)
+**Parallel With**: Phase 3B
+**Files**: `src/app/(dashboard)/messages/*`, `src/components/messages/*`, `src/app/api/messages/*`
+
+**Claude Prompt**:
+```
+You are working on the WA Bot Dashboard project (branch: dashboard).
+Your task is to implement the Messages feature.
+
+## Context
+- Next.js 14+ with App Router
+- Database layer in src/lib/db/
+- Bot service in src/lib/bot/
+- WebSocket in src/lib/socket/
+
+## Tasks
+
+### Pages
+1. src/app/(dashboard)/messages/page.tsx - Message list with chat sidebar
+2. src/app/(dashboard)/messages/[id]/page.tsx - Conversation view
+
+### Components (src/components/messages/)
+1. chat-list.tsx - List of conversations
+2. message-list.tsx - Messages in a conversation
+3. message-item.tsx - Single message bubble
+4. message-input.tsx - Text input with send button
+
+### API Routes (src/app/api/messages/)
+1. route.ts - GET: List messages, POST: Not used
+2. send/route.ts - POST: Send a message
+3. [id]/route.ts - GET: Messages for specific JID
+4. search/route.ts - GET: Search messages
+
+### Hooks
+1. src/hooks/use-messages.ts - Fetch and manage messages
+
+### Store
+1. src/stores/message-store.ts - Messages state with Zustand
+
+## API Specifications
+
+GET /api/messages?page=1&limit=50
+Response: { messages: Message[], total: number, page: number }
+
+GET /api/messages/:jid
+Response: { messages: Message[], contact: { jid, name, phone } }
+
+POST /api/messages/send
+Body: { jid: string, text: string, type?: 'text' | 'image' }
+Response: { success: boolean, messageId: string }
+
+GET /api/messages/search?q=query
+Response: { messages: Message[] }
+
+## UI Requirements
+- Real-time message updates via WebSocket
+- Message bubbles: incoming (left, gray), outgoing (right, green)
+- Show typing indicator when bot is typing
+- Infinite scroll for message history
+- Use brand.css .message-bubble-* classes
+```
+
+---
+
+### Phase 3B: Users & Groups Feature
+**Status**: 🔲 Pending
+**Dependencies**: Phase 2A (Database), Phase 2B (Bot Service)
+**Parallel With**: Phase 3A
+**Files**: `src/app/(dashboard)/users/*`, `src/app/(dashboard)/groups/*`, `src/components/users/*`
+
+**Claude Prompt**:
+```
+You are working on the WA Bot Dashboard project (branch: dashboard).
+Your task is to implement Users and Groups management features.
+
+## Context
+- Next.js 14+ with App Router
+- Database layer in src/lib/db/
+- Bot service in src/lib/bot/
+
+## Tasks
+
+### User Pages
+1. src/app/(dashboard)/users/page.tsx - User list with table
+2. src/app/(dashboard)/users/[id]/page.tsx - User details
+
+### Group Pages
+1. src/app/(dashboard)/groups/page.tsx - Group list
+2. src/app/(dashboard)/groups/[id]/page.tsx - Group details
+
+### Components (src/components/users/)
+1. user-table.tsx - Sortable/filterable user table
+2. user-card.tsx - User info card
+3. ban-dialog.tsx - Ban confirmation dialog
+
+### API Routes
+
+#### Users (src/app/api/users/)
+1. route.ts - GET: List users
+2. [id]/route.ts - GET: User details, DELETE: Remove user
+3. [id]/ban/route.ts - POST: Ban user, DELETE: Unban
+4. banned/route.ts - GET: List banned users
+
+#### Groups (src/app/api/groups/)
+1. route.ts - GET: List groups
+2. [id]/route.ts - GET: Group details
+3. [id]/members/route.ts - GET: Group members
+4. [id]/leave/route.ts - POST: Leave group
+
+### Hooks
+1. src/hooks/use-users.ts - User data management
+
+## API Specifications
+
+GET /api/users?page=1&limit=20&search=query&banned=false
+Response: { users: User[], total: number }
+
+GET /api/users/:jid
+Response: { user: User, recentMessages: Message[], commandHistory: CommandLog[] }
+
+POST /api/users/:jid/ban
+Body: { reason?: string }
+Response: { success: boolean }
+
+GET /api/groups
+Response: { groups: Group[] }
+
+## UI Requirements
+- User table with columns: Avatar, Name, Phone, Messages, Last Seen, Status, Actions
+- Sortable by any column
+- Search/filter functionality
+- Ban button with confirmation dialog
+- Bulk actions: Ban selected, Export CSV
+```
+
+---
+
+### Phase 4A: Dashboard Home
+**Status**: 🔲 Pending
+**Dependencies**: Phase 2A, 2B, 2C, 2D (All Phase 2)
+**Parallel With**: None (integrates all Phase 2 work)
+**Files**: `src/app/(dashboard)/page.tsx`, `src/components/dashboard/*`
+
+**Claude Prompt**:
+```
+You are working on the WA Bot Dashboard project (branch: dashboard).
+Your task is to implement the Dashboard Home page.
+
+## Context
+- All Phase 2 components should be complete
+- Database, Bot Service, WebSocket, UI Layout ready
+
+## Tasks
+
+### Main Page
+1. src/app/(dashboard)/page.tsx - Dashboard home
+
+### Components (src/components/dashboard/)
+1. stats-card.tsx - Stat display card
+2. connection-status.tsx - Bot connection indicator with QR
+3. qr-display.tsx - QR code display component
+4. activity-feed.tsx - Recent activity list
+5. quick-actions.tsx - Common action buttons
+
+### Hooks
+1. src/hooks/use-bot-status.ts - Bot connection state
+2. src/hooks/use-stats.ts - Real-time statistics
+
+### Store
+1. src/stores/bot-store.ts - Bot state management
+
+## Dashboard Layout
+```
+┌────────────────────────────────────────────────────────┐
+│ Connection Status                                      │
+│ ┌──────────────────────────────────────────────────┐  │
+│ │  [QR Code]  or  ✅ Connected to +1234567890      │  │
+│ │              [Connect] [Disconnect]               │  │
+│ └──────────────────────────────────────────────────┘  │
+├────────────────────────────────────────────────────────┤
+│ Stats Cards                                            │
+│ ┌──────────┐ ┌──────────┐ ┌──────────┐ ┌──────────┐  │
+│ │ Messages │ │  Users   │ │ Commands │ │  Uptime  │  │
+│ │   1,234  │ │    89    │ │   456    │ │  2d 5h   │  │
+│ └──────────┘ └──────────┘ └──────────┘ └──────────┘  │
+├────────────────────────────────────────────────────────┤
+│ ┌─────────────────────┐ ┌────────────────────────────┐│
+│ │   Activity Feed     │ │     Quick Actions          ││
+│ │ - User joined       │ │ [Send Message]             ││
+│ │ - Message received  │ │ [View Users]               ││
+│ │ - Command executed  │ │ [Broadcast]                ││
+│ │ - ...               │ │ [Settings]                 ││
+│ └─────────────────────┘ └────────────────────────────┘│
+└────────────────────────────────────────────────────────┘
+```
+
+## Requirements
+- Real-time stats updates via WebSocket
+- QR code displays when disconnected
+- Smooth connection state transitions
+- Activity feed shows last 10 events
+- Use brand.css .stats-card class
+```
+
+---
+
+### Phase 5A: Analytics Feature
+**Status**: 🔲 Pending
+**Dependencies**: Phase 3A (Messages), Phase 3B (Users)
+**Parallel With**: Phase 5B, 5C
+**Files**: `src/app/(dashboard)/analytics/*`, `src/components/analytics/*`
+
+**Claude Prompt**:
+```
+You are working on the WA Bot Dashboard project (branch: dashboard).
+Your task is to implement the Analytics dashboard.
+
+## Context
+- Recharts library for charts (already installed)
+- Message and user data available from Phase 3
+
+## Tasks
+
+### Page
+1. src/app/(dashboard)/analytics/page.tsx
+
+### Components (src/components/analytics/)
+1. message-chart.tsx - Line chart for message volume
+2. command-pie.tsx - Pie chart for command usage
+3. user-growth.tsx - Area chart for user growth
+4. stats-overview.tsx - Summary statistics grid
+
+### API Routes
+1. src/app/api/analytics/messages/route.ts - Message volume data
+2. src/app/api/analytics/commands/route.ts - Command usage data
+3. src/app/api/analytics/users/route.ts - User growth data
+
+## Chart Specifications
+
+### Message Volume Chart
+- X-axis: Time (hourly for day, daily for week/month)
+- Y-axis: Message count
+- Two lines: Incoming (blue) and Outgoing (green)
+
+### Command Usage Pie
+- Slice for each command
+- Show percentage and count
+- Top 10 commands, rest as "Other"
+
+### User Growth Chart
+- X-axis: Date
+- Y-axis: Cumulative user count
+- Area chart with gradient fill
+
+## API Response Formats
+```typescript
+// GET /api/analytics/messages?range=week
+{
+  data: [
+    { date: '2024-01-01', incoming: 150, outgoing: 120 },
+    ...
+  ]
+}
+
+// GET /api/analytics/commands
+{
+  data: [
+    { command: 'ping', count: 450, percentage: 35 },
+    ...
+  ]
+}
+```
+
+## Requirements
+- Use brand colors for charts (--brand-primary, --brand-accent)
+- Responsive charts
+- Date range selector (Today, Week, Month, Year)
+- Export data as CSV button
+```
+
+---
+
+### Phase 5B: Commands Management
+**Status**: 🔲 Pending
+**Dependencies**: Phase 2B (Bot Service)
+**Parallel With**: Phase 5A, 5C
+**Files**: `src/app/(dashboard)/commands/*`, `src/app/api/commands/*`
+
+**Claude Prompt**:
+```
+You are working on the WA Bot Dashboard project (branch: dashboard).
+Your task is to implement Commands management.
+
+## Tasks
+
+### Page
+1. src/app/(dashboard)/commands/page.tsx
+
+### API Routes (src/app/api/commands/)
+1. route.ts - GET: List all commands
+2. [name]/route.ts - GET: Command details, PATCH: Update settings
+3. stats/route.ts - GET: Command usage statistics
+
+## Features
+- List all bot commands with descriptions
+- Show usage count for each command
+- Enable/Disable commands toggle
+- Edit cooldown settings
+- View command usage history
+
+## Command Card Display
+```
+┌────────────────────────────────────────────────────────┐
+│ !ping                                        [Toggle] │
+│ Check bot latency and response time                   │
+│ ───────────────────────────────────────────────────── │
+│ Aliases: !p          Cooldown: 5s       Uses: 1,234  │
+│ Category: General    Owner Only: No                   │
+└────────────────────────────────────────────────────────┘
+```
+
+## API Specifications
+```typescript
+// GET /api/commands
+{
+  commands: [
+    {
+      name: 'ping',
+      description: 'Check bot latency',
+      aliases: ['p'],
+      category: 'general',
+      cooldown: 5,
+      ownerOnly: false,
+      enabled: true,
+      usageCount: 1234
+    }
+  ]
+}
+
+// PATCH /api/commands/:name
+Body: { enabled?: boolean, cooldown?: number }
+Response: { success: boolean, command: Command }
+```
+```
+
+---
+
+### Phase 5C: Broadcast Center
+**Status**: 🔲 Pending
+**Dependencies**: Phase 2A (Database), Phase 3B (Users)
+**Parallel With**: Phase 5A, 5B
+**Files**: `src/app/(dashboard)/broadcast/*`, `src/app/api/broadcast/*`
+
+**Claude Prompt**:
+```
+You are working on the WA Bot Dashboard project (branch: dashboard).
+Your task is to implement the Broadcast Center.
+
+## Tasks
+
+### Pages
+1. src/app/(dashboard)/broadcast/page.tsx - Broadcast list
+2. src/app/(dashboard)/broadcast/new/page.tsx - Create broadcast
+
+### API Routes (src/app/api/broadcast/)
+1. route.ts - GET: List broadcasts, POST: Create broadcast
+2. [id]/route.ts - GET: Broadcast status, DELETE: Cancel
+
+## Features
+- View broadcast history with status
+- Create new broadcast with:
+  - Message content (with preview)
+  - Recipient selection (All users, Groups only, Custom list)
+  - Schedule for later (optional)
+- Track delivery progress (sent, failed, pending)
+- Cancel scheduled broadcasts
+
+## Create Broadcast Form
+```
+┌────────────────────────────────────────────────────────┐
+│ New Broadcast                                          │
+├────────────────────────────────────────────────────────┤
+│ Message:                                               │
+│ ┌────────────────────────────────────────────────────┐│
+│ │ Hello! This is a broadcast message...             ││
+│ └────────────────────────────────────────────────────┘│
+│                                                        │
+│ Recipients:                                            │
+│ ○ All active users (89)                               │
+│ ○ Groups only (12)                                    │
+│ ○ Custom selection                                    │
+│                                                        │
+│ Schedule:                                              │
+│ ○ Send now                                            │
+│ ○ Schedule: [Date picker] [Time picker]               │
+│                                                        │
+│ [Cancel]                            [Send Broadcast]  │
+└────────────────────────────────────────────────────────┘
+```
+
+## Broadcast Status Display
+- Pending: Not yet started
+- In Progress: Currently sending (show progress bar)
+- Completed: All sent
+- Cancelled: User cancelled
+
+## Requirements
+- Real-time progress updates via WebSocket
+- Confirmation dialog before sending
+- Rate limiting respect (from bot service)
+```
+
+---
+
+### Phase 6A: Settings Panel
+**Status**: 🔲 Pending
+**Dependencies**: Phase 2B (Bot Service), Phase 2A (Database)
+**Parallel With**: Phase 6B
+**Files**: `src/app/(dashboard)/settings/*`, `src/app/api/config/*`
+
+**Claude Prompt**:
+```
+You are working on the WA Bot Dashboard project (branch: dashboard).
+Your task is to implement the Settings Panel.
+
+## Tasks
+
+### Pages
+1. src/app/(dashboard)/settings/page.tsx - Settings overview
+2. src/app/(dashboard)/settings/bot/page.tsx - Bot configuration
+3. src/app/(dashboard)/settings/rate-limit/page.tsx - Rate limiting
+4. src/app/(dashboard)/settings/session/page.tsx - Session management
+
+### API Routes (src/app/api/config/)
+1. route.ts - GET: All config, PATCH: Update config
+2. reset/route.ts - POST: Reset to defaults
+
+## Settings Sections
+
+### Bot Configuration
+- Bot name
+- Command prefix
+- Owner number
+- Enable groups toggle
+- Auto-read messages toggle
+- Typing indicator toggle
+
+### Rate Limiting
+- Per-user limit (messages/minute)
+- Per-group limit
+- Global limit
+- Block duration
+
+### Response Settings
+- Min response delay (ms)
+- Max response delay (ms)
+- Typing speed (ms per char)
+
+### Session Management
+- View current session info
+- Phone number connected
+- Session age
+- Logout button (disconnect and clear session)
+- Backup session button
+
+## Form Requirements
+- Use React Hook Form + Zod validation
+- Show current values as defaults
+- Save button per section
+- Reset to defaults button
+- Confirmation for dangerous actions (logout)
+```
+
+---
+
+### Phase 6B: Logs Viewer
+**Status**: 🔲 Pending
+**Dependencies**: Phase 2C (WebSocket)
+**Parallel With**: Phase 6A
+**Files**: `src/app/(dashboard)/logs/*`
+
+**Claude Prompt**:
+```
+You are working on the WA Bot Dashboard project (branch: dashboard).
+Your task is to implement the Logs Viewer.
+
+## Tasks
+
+### Page
+1. src/app/(dashboard)/logs/page.tsx
+
+## Features
+- Real-time log streaming via WebSocket
+- Filter by log level: debug, info, warn, error
+- Search logs by content
+- Pause/Resume streaming
+- Clear display
+- Download logs as file
+
+## Log Entry Display
+```
+┌────────────────────────────────────────────────────────┐
+│ Logs                              [Pause] [Clear] [⬇] │
+├────────────────────────────────────────────────────────┤
+│ Filter: [All ▼] Search: [________________] [🔍]       │
+├────────────────────────────────────────────────────────┤
+│ 14:32:05 [INFO]  Message received from +1234567890    │
+│ 14:32:06 [INFO]  Executing command: ping              │
+│ 14:32:06 [DEBUG] Response delay: 2340ms               │
+│ 14:32:08 [INFO]  Message sent to +1234567890          │
+│ 14:32:15 [WARN]  Rate limit approaching for user      │
+│ 14:33:01 [ERROR] Failed to send message: timeout      │
+└────────────────────────────────────────────────────────┘
+```
+
+## Log Level Colors
+- DEBUG: gray (--neutral-400)
+- INFO: blue (--color-info)
+- WARN: yellow (--color-warning)
+- ERROR: red (--color-error)
+
+## Requirements
+- Virtual scrolling for performance (many logs)
+- Auto-scroll to bottom (unless user scrolled up)
+- Timestamp formatting
+- Log entry click to expand details
+- Max 1000 logs in memory
+```
+
+---
+
+### Phase 7: Authentication & Polish
+**Status**: 🔲 Pending
+**Dependencies**: All previous phases
+**Parallel With**: None (final phase)
+**Files**: `src/app/(auth)/*`, various polish tasks
+
+**Claude Prompt**:
+```
+You are working on the WA Bot Dashboard project (branch: dashboard).
+Your task is to implement Authentication and polish the application.
+
+## Tasks
+
+### Authentication
+1. src/app/(auth)/login/page.tsx - Login page
+2. src/lib/auth/index.ts - Auth utilities
+3. src/middleware.ts - Route protection
+4. Add auth checks to all API routes
+
+### Polish Tasks
+1. Add loading skeletons to all pages
+2. Add error boundaries
+3. Improve error messages
+4. Add toast notifications
+5. Responsive design fixes
+6. Keyboard shortcuts (Cmd+K for search)
+7. Dark mode toggle in header
+
+### Documentation
+1. Update README.md with setup instructions
+2. Create .env.example with all variables
+3. Add inline code comments
+
+### Deployment
+1. Create Dockerfile
+2. Create docker-compose.yml
+3. Add production build optimization
+4. Create deployment guide
+
+## Login Page
+- Simple username/password form
+- Credentials from environment variables
+- JWT session token
+- Remember me checkbox
+- Redirect to dashboard on success
+
+## Auth Requirements
+- Protect all /api/* routes except /api/auth/*
+- Protect all dashboard pages
+- 24-hour session expiry
+- Secure HTTP-only cookies
+```
+
+---
+
+## Quick Reference: Phase Dependencies
+
+| Phase | Can Start After | Can Run Parallel With |
+|-------|-----------------|----------------------|
+| 1 | - | - |
+| 2A (Database) | Phase 1 | 2B, 2C, 2D |
+| 2B (Bot Service) | Phase 1 | 2A, 2C, 2D |
+| 2C (WebSocket) | Phase 1 | 2A, 2B, 2D |
+| 2D (UI Layout) | Phase 1 | 2A, 2B, 2C |
+| 3A (Messages) | 2A, 2B, 2C | 3B |
+| 3B (Users/Groups) | 2A, 2B | 3A |
+| 4A (Dashboard) | All Phase 2 | - |
+| 5A (Analytics) | 3A, 3B | 5B, 5C |
+| 5B (Commands) | 2B | 5A, 5C |
+| 5C (Broadcast) | 2A, 3B | 5A, 5B |
+| 6A (Settings) | 2A, 2B | 6B |
+| 6B (Logs) | 2C | 6A |
+| 7 (Auth/Polish) | All phases | - |
 
 ---
 
@@ -370,225 +1062,62 @@ CREATE TABLE settings (
 ```
 wa-bot-dashboard/
 ├── src/
-│   ├── app/                          # Next.js App Router
-│   │   ├── (auth)/
-│   │   │   └── login/
-│   │   │       └── page.tsx
+│   ├── app/
+│   │   ├── (auth)/login/page.tsx
 │   │   ├── (dashboard)/
-│   │   │   ├── layout.tsx            # Dashboard layout with sidebar
-│   │   │   ├── page.tsx              # Home/Overview
+│   │   │   ├── layout.tsx
+│   │   │   ├── page.tsx
 │   │   │   ├── messages/
-│   │   │   │   ├── page.tsx
-│   │   │   │   └── [id]/page.tsx
 │   │   │   ├── users/
-│   │   │   │   ├── page.tsx
-│   │   │   │   └── [id]/page.tsx
 │   │   │   ├── groups/
-│   │   │   │   ├── page.tsx
-│   │   │   │   └── [id]/page.tsx
 │   │   │   ├── commands/
-│   │   │   │   └── page.tsx
 │   │   │   ├── analytics/
-│   │   │   │   └── page.tsx
 │   │   │   ├── broadcast/
-│   │   │   │   ├── page.tsx
-│   │   │   │   └── new/page.tsx
 │   │   │   ├── settings/
-│   │   │   │   ├── page.tsx
-│   │   │   │   ├── bot/page.tsx
-│   │   │   │   ├── rate-limit/page.tsx
-│   │   │   │   └── session/page.tsx
 │   │   │   └── logs/
-│   │   │       └── page.tsx
 │   │   ├── api/
 │   │   │   ├── bot/
-│   │   │   │   ├── status/route.ts
-│   │   │   │   ├── connect/route.ts
-│   │   │   │   ├── disconnect/route.ts
-│   │   │   │   ├── qr/route.ts
-│   │   │   │   ├── pair/route.ts
-│   │   │   │   └── stats/route.ts
 │   │   │   ├── messages/
-│   │   │   │   ├── route.ts
-│   │   │   │   ├── send/route.ts
-│   │   │   │   └── [id]/route.ts
 │   │   │   ├── users/
-│   │   │   │   ├── route.ts
-│   │   │   │   ├── [id]/route.ts
-│   │   │   │   ├── [id]/ban/route.ts
-│   │   │   │   └── banned/route.ts
 │   │   │   ├── groups/
-│   │   │   │   ├── route.ts
-│   │   │   │   └── [id]/route.ts
 │   │   │   ├── commands/
-│   │   │   │   ├── route.ts
-│   │   │   │   └── [name]/route.ts
 │   │   │   ├── broadcast/
-│   │   │   │   ├── route.ts
-│   │   │   │   └── [id]/route.ts
 │   │   │   ├── config/
-│   │   │   │   └── route.ts
 │   │   │   └── socket/
-│   │   │       └── route.ts
 │   │   ├── layout.tsx
 │   │   └── globals.css
 │   │
 │   ├── components/
-│   │   ├── ui/                       # shadcn/ui components
-│   │   │   ├── button.tsx
-│   │   │   ├── card.tsx
-│   │   │   ├── input.tsx
-│   │   │   ├── table.tsx
-│   │   │   ├── dialog.tsx
-│   │   │   └── ...
-│   │   ├── layout/
-│   │   │   ├── sidebar.tsx
-│   │   │   ├── header.tsx
-│   │   │   ├── nav-item.tsx
-│   │   │   └── user-menu.tsx
-│   │   ├── dashboard/
-│   │   │   ├── stats-card.tsx
-│   │   │   ├── connection-status.tsx
-│   │   │   ├── qr-display.tsx
-│   │   │   ├── activity-feed.tsx
-│   │   │   └── quick-actions.tsx
-│   │   ├── messages/
-│   │   │   ├── message-list.tsx
-│   │   │   ├── message-item.tsx
-│   │   │   ├── message-input.tsx
-│   │   │   ├── chat-list.tsx
-│   │   │   └── emoji-picker.tsx
-│   │   ├── users/
-│   │   │   ├── user-table.tsx
-│   │   │   ├── user-card.tsx
-│   │   │   └── ban-dialog.tsx
-│   │   ├── analytics/
-│   │   │   ├── message-chart.tsx
-│   │   │   ├── command-pie.tsx
-│   │   │   └── stats-overview.tsx
-│   │   └── shared/
-│   │       ├── loading.tsx
-│   │       ├── error.tsx
-│   │       ├── empty-state.tsx
-│   │       └── pagination.tsx
+│   │   ├── ui/           # shadcn/ui
+│   │   ├── layout/       # Sidebar, Header
+│   │   ├── dashboard/    # Stats, QR, Activity
+│   │   ├── messages/     # Chat components
+│   │   ├── users/        # User table, cards
+│   │   ├── analytics/    # Charts
+│   │   └── shared/       # Loading, Error, etc.
 │   │
 │   ├── lib/
-│   │   ├── bot/
-│   │   │   ├── index.ts              # Bot singleton manager
-│   │   │   ├── events.ts             # Event emitter for real-time
-│   │   │   └── adapter.ts            # Adapter for wa-bot-cli
-│   │   ├── db/
-│   │   │   ├── index.ts              # Database connection
-│   │   │   ├── schema.ts             # Schema definitions
-│   │   │   └── queries.ts            # Query helpers
-│   │   ├── socket/
-│   │   │   ├── server.ts             # Socket.io server setup
-│   │   │   └── events.ts             # Event definitions
-│   │   ├── auth/
-│   │   │   └── index.ts              # Auth utilities
-│   │   └── utils/
-│   │       ├── format.ts             # Formatting helpers
-│   │       ├── date.ts               # Date utilities
-│   │       └── validation.ts         # Zod schemas
+│   │   ├── bot/          # Bot service layer
+│   │   ├── db/           # SQLite database
+│   │   ├── socket/       # WebSocket server
+│   │   ├── auth/         # Authentication
+│   │   └── utils.ts      # Utilities
 │   │
-│   ├── hooks/
-│   │   ├── use-bot-status.ts
-│   │   ├── use-messages.ts
-│   │   ├── use-users.ts
-│   │   ├── use-socket.ts
-│   │   └── use-stats.ts
-│   │
-│   ├── stores/
-│   │   ├── bot-store.ts              # Bot state
-│   │   ├── message-store.ts          # Messages state
-│   │   └── ui-store.ts               # UI state (sidebar, modals)
-│   │
-│   └── types/
-│       ├── bot.ts
-│       ├── message.ts
-│       ├── user.ts
-│       └── api.ts
-│
-├── public/
-│   ├── logo.svg
-│   └── favicon.ico
+│   ├── hooks/            # React hooks
+│   ├── stores/           # Zustand stores
+│   ├── styles/
+│   │   └── brand.css     # Design tokens
+│   └── types/            # TypeScript types
 │
 ├── data/
-│   ├── auth/                         # Bot session (from wa-bot-cli)
-│   └── dashboard.db                  # SQLite database
+│   ├── auth/             # Bot session
+│   └── dashboard.db      # SQLite database
 │
+├── public/
 ├── .env.example
-├── .env.local
-├── .gitignore
 ├── package.json
-├── tsconfig.json
-├── tailwind.config.ts
-├── next.config.js
 └── README.md
 ```
-
----
-
-## Implementation Phases
-
-### Phase 1: Foundation (Week 1)
-- [x] Create dashboard branch
-- [x] Create implementation plan
-- [ ] Initialize Next.js project
-- [ ] Setup Tailwind CSS + shadcn/ui
-- [ ] Create basic layout (sidebar, header)
-- [ ] Setup SQLite database
-- [ ] Integrate @majorabdullah/wa-bot-cli package
-- [ ] Create bot adapter/service layer
-- [ ] Implement WebSocket server
-
-### Phase 2: Core Dashboard (Week 2)
-- [ ] Dashboard home page
-  - [ ] Connection status component
-  - [ ] QR code display
-  - [ ] Stats cards
-  - [ ] Activity feed
-- [ ] Bot control API endpoints
-- [ ] Real-time connection updates
-
-### Phase 3: Messages (Week 3)
-- [ ] Messages page with live feed
-- [ ] Chat list sidebar
-- [ ] Conversation view
-- [ ] Send message functionality
-- [ ] Message search
-- [ ] Message persistence to database
-
-### Phase 4: Users & Groups (Week 4)
-- [ ] Users list page
-- [ ] User detail page
-- [ ] Ban/Unban functionality
-- [ ] Groups list page
-- [ ] Group detail page
-- [ ] User/Group data persistence
-
-### Phase 5: Analytics & Commands (Week 5)
-- [ ] Analytics dashboard
-- [ ] Message volume charts
-- [ ] Command usage statistics
-- [ ] Commands management page
-- [ ] Command enable/disable
-
-### Phase 6: Settings & Broadcast (Week 6)
-- [ ] Settings panel (all sections)
-- [ ] Configuration API
-- [ ] Broadcast center
-- [ ] Scheduled broadcasts
-- [ ] Logs viewer
-
-### Phase 7: Polish & Deploy (Week 7)
-- [ ] Authentication (login page)
-- [ ] Error handling improvements
-- [ ] Loading states
-- [ ] Responsive design fixes
-- [ ] Documentation
-- [ ] Docker support
-- [ ] Production deployment guide
 
 ---
 
@@ -604,7 +1133,7 @@ AUTH_SECRET="your-secret-key-here"
 ADMIN_USERNAME="admin"
 ADMIN_PASSWORD="secure-password"
 
-# Bot Configuration (passed to wa-bot-cli)
+# Bot Configuration
 BOT_NAME="WhatsAppBot"
 BOT_PREFIX="!"
 OWNER_NUMBER="1234567890"
@@ -618,51 +1147,29 @@ AUTH_FOLDER="./data/auth"
 
 ---
 
-## Getting Started (After Implementation)
+## Getting Started
 
 ```bash
-# Clone the repository
+# Clone and checkout
 git clone https://github.com/MajorAbdullah/WA.git
-cd WA
-git checkout dashboard
+cd WA && git checkout dashboard
 
-# Install dependencies
+# Install
 npm install
 
-# Setup environment
+# Setup
 cp .env.example .env.local
-# Edit .env.local with your settings
 
-# Initialize database
-npm run db:init
-
-# Start development server
+# Run
 npm run dev
-
-# Open http://localhost:3000
 ```
-
----
-
-## Future Enhancements
-
-1. **Multi-Bot Support**: Manage multiple WhatsApp accounts
-2. **Custom Commands Builder**: Visual command creator
-3. **Webhook Integration**: External service notifications
-4. **Auto-Reply Rules**: Configurable automatic responses
-5. **Contact Sync**: Import/Export contacts
-6. **Message Templates**: Reusable message templates
-7. **API Keys**: External API access for integrations
-8. **Audit Log**: Track all dashboard actions
-9. **Backup/Restore**: Full data backup functionality
-10. **Mobile App**: React Native companion app
 
 ---
 
 ## Notes
 
-- The dashboard uses `@majorabdullah/wa-bot-cli` as a dependency, not forking or copying code
+- Dashboard uses `@syed-abdullah-shah/wa-bot-cli` as npm dependency
 - All bot functionality comes from the CLI package
-- Dashboard adds persistence, real-time updates, and visual interface
-- SQLite is used for simplicity; can be swapped for PostgreSQL for production
-- WebSocket provides real-time updates without polling
+- SQLite for simplicity; swap for PostgreSQL in production
+- WebSocket provides real-time updates
+- Brand CSS ensures consistent styling across all components
