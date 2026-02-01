@@ -1,5 +1,5 @@
 {
-  "name": "wa-bot-cli",
+  "name": "@syed-abdullah-shah/wa-bot-cli",
   "version": "1.0.0",
   "description": "A powerful, anti-ban protected WhatsApp bot CLI built with Baileys",
   "main": "dist/index.js",
