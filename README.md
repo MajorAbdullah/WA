@@ -4,10 +4,12 @@
 
 ### A powerful, anti-ban protected WhatsApp bot
 
+[![npm version](https://img.shields.io/npm/v/@syed-abdullah-shah/wa-bot-cli?style=for-the-badge&logo=npm&logoColor=white&color=CB3837)](https://www.npmjs.com/package/@syed-abdullah-shah/wa-bot-cli)
 [![Node.js](https://img.shields.io/badge/Node.js-18%2B-339933?style=for-the-badge&logo=nodedotjs&logoColor=white)](https://nodejs.org/)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.0-3178C6?style=for-the-badge&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
 [![Baileys](https://img.shields.io/badge/Baileys-Latest-25D366?style=for-the-badge&logo=whatsapp&logoColor=white)](https://github.com/WhiskeySockets/Baileys)
 [![License](https://img.shields.io/badge/License-MIT-yellow?style=for-the-badge)](LICENSE)
+[![Downloads](https://img.shields.io/npm/dm/@syed-abdullah-shah/wa-bot-cli?style=for-the-badge&logo=npm&logoColor=white)](https://www.npmjs.com/package/@syed-abdullah-shah/wa-bot-cli)
 
 <p align="center">
   <a href="#-features">Features</a> •
@@ -40,9 +42,27 @@
 
 ### 📦 Installation
 
+#### Option 1: Install from npm (Recommended)
+
+```bash
+# Install globally
+npm install -g @syed-abdullah-shah/wa-bot-cli
+
+# Run the bot
+wa-bot
+```
+
+Or use npx without installing:
+
+```bash
+npx @syed-abdullah-shah/wa-bot-cli
+```
+
+#### Option 2: Clone from GitHub
+
 ```bash
 # Clone the repository
-git clone <your-repo-url>
+git clone https://github.com/MajorAbdullah/WA.git
 cd WA
 
 # Install dependencies
