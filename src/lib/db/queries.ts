@@ -5,10 +5,13 @@ import type {
   Broadcast,
   CommandLog,
   Setting,
+  Command,
   CreateMessageInput,
   CreateUserInput,
   CreateBroadcastInput,
   CreateCommandLogInput,
+  CreateCommandInput,
+  UpdateCommandInput,
   MessageFilters,
   UserFilters,
   PaginationOptions,
@@ -801,4 +804,293 @@ export function getMessageVolumeByDay(
     .all(startDate) as Array<{ date: string; incoming: number; outgoing: number }>;
 
   return rows;
+}
+
+// ============================================================================
+// COMMANDS QUERIES
+// ============================================================================
+
+/**
+ * Get all commands
+ */
+export function getAllCommands(): Command[] {
+  const db = getDatabase();
+  return db
+    .prepare('SELECT * FROM commands ORDER BY category, name')
+    .all() as Command[];
+}
+
+/**
+ * Get a command by name
+ */
+export function getCommandByName(name: string): Command | null {
+  const db = getDatabase();
+  const command = db
+    .prepare('SELECT * FROM commands WHERE name = ?')
+    .get(name) as Command | undefined;
+  return command ?? null;
+}
+
+/**
+ * Get commands by category
+ */
+export function getCommandsByCategory(category: string): Command[] {
+  const db = getDatabase();
+  return db
+    .prepare('SELECT * FROM commands WHERE category = ? ORDER BY name')
+    .all(category) as Command[];
+}
+
+/**
+ * Create or update a command
+ */
+export function upsertCommand(input: CreateCommandInput): Command {
+  const db = getDatabase();
+  const aliases = JSON.stringify(input.aliases || []);
+
+  db.prepare(
+    `
+    INSERT INTO commands (name, description, aliases, category, cooldown, owner_only, enabled, updated_at)
+    VALUES (?, ?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP)
+    ON CONFLICT(name) DO UPDATE SET
+      description = excluded.description,
+      aliases = excluded.aliases,
+      category = excluded.category,
+      cooldown = excluded.cooldown,
+      owner_only = excluded.owner_only,
+      enabled = excluded.enabled,
+      updated_at = CURRENT_TIMESTAMP
+  `
+  ).run(
+    input.name,
+    input.description,
+    aliases,
+    input.category || 'general',
+    input.cooldown ?? 5,
+    input.owner_only ? 1 : 0,
+    input.enabled !== false ? 1 : 0
+  );
+
+  return getCommandByName(input.name)!;
+}
+
+/**
+ * Update command settings
+ */
+export function updateCommand(
+  name: string,
+  updates: UpdateCommandInput
+): Command | null {
+  const db = getDatabase();
+  const existing = getCommandByName(name);
+  if (!existing) return null;
+
+  const setClauses: string[] = ['updated_at = CURRENT_TIMESTAMP'];
+  const values: (string | number)[] = [];
+
+  if (updates.enabled !== undefined) {
+    setClauses.push('enabled = ?');
+    values.push(updates.enabled ? 1 : 0);
+  }
+
+  if (updates.cooldown !== undefined) {
+    setClauses.push('cooldown = ?');
+    values.push(updates.cooldown);
+  }
+
+  values.push(name);
+
+  db.prepare(
+    `UPDATE commands SET ${setClauses.join(', ')} WHERE name = ?`
+  ).run(...values);
+
+  return getCommandByName(name);
+}
+
+/**
+ * Toggle command enabled state
+ */
+export function toggleCommand(name: string): Command | null {
+  const db = getDatabase();
+  const existing = getCommandByName(name);
+  if (!existing) return null;
+
+  db.prepare(
+    `UPDATE commands SET enabled = NOT enabled, updated_at = CURRENT_TIMESTAMP WHERE name = ?`
+  ).run(name);
+
+  return getCommandByName(name);
+}
+
+/**
+ * Delete a command
+ */
+export function deleteCommand(name: string): boolean {
+  const db = getDatabase();
+  const result = db.prepare('DELETE FROM commands WHERE name = ?').run(name);
+  return result.changes > 0;
+}
+
+/**
+ * Increment command usage count
+ */
+export function incrementCommandUsage(name: string): void {
+  const db = getDatabase();
+  db.prepare(
+    `UPDATE commands SET usage_count = usage_count + 1, updated_at = CURRENT_TIMESTAMP WHERE name = ?`
+  ).run(name);
+}
+
+/**
+ * Get command usage statistics with recent history
+ */
+export function getCommandUsageStats(name: string, days: number = 7): {
+  totalUsage: number;
+  recentUsage: number;
+  successRate: number;
+  dailyUsage: Array<{ date: string; count: number }>;
+} {
+  const db = getDatabase();
+  const startDate = Date.now() - days * 24 * 60 * 60 * 1000;
+
+  const totalUsage = db
+    .prepare('SELECT COUNT(*) as count FROM command_logs WHERE command = ?')
+    .get(name) as { count: number };
+
+  const recentUsage = db
+    .prepare(
+      'SELECT COUNT(*) as count FROM command_logs WHERE command = ? AND created_at >= datetime(?, "unixepoch")'
+    )
+    .get(name, Math.floor(startDate / 1000)) as { count: number };
+
+  const successStats = db
+    .prepare(
+      'SELECT AVG(success) * 100 as rate FROM command_logs WHERE command = ?'
+    )
+    .get(name) as { rate: number | null };
+
+  const dailyUsage = db
+    .prepare(
+      `
+      SELECT
+        date(created_at) as date,
+        COUNT(*) as count
+      FROM command_logs
+      WHERE command = ? AND created_at >= datetime(?, 'unixepoch')
+      GROUP BY date(created_at)
+      ORDER BY date ASC
+    `
+    )
+    .all(name, Math.floor(startDate / 1000)) as Array<{ date: string; count: number }>;
+
+  return {
+    totalUsage: totalUsage.count,
+    recentUsage: recentUsage.count,
+    successRate: successStats.rate ?? 100,
+    dailyUsage,
+  };
+}
+
+/**
+ * Seed default commands (called on initialization)
+ */
+export function seedDefaultCommands(): void {
+  const defaultCommands: CreateCommandInput[] = [
+    {
+      name: 'ping',
+      description: 'Check bot latency and response time',
+      aliases: ['p'],
+      category: 'general',
+      cooldown: 5,
+      owner_only: false,
+    },
+    {
+      name: 'help',
+      description: 'Show available commands and their usage',
+      aliases: ['h', 'menu'],
+      category: 'general',
+      cooldown: 5,
+      owner_only: false,
+    },
+    {
+      name: 'info',
+      description: 'Display bot information and statistics',
+      aliases: ['botinfo', 'stats'],
+      category: 'general',
+      cooldown: 10,
+      owner_only: false,
+    },
+    {
+      name: 'sticker',
+      description: 'Convert image or video to sticker',
+      aliases: ['s', 'stiker'],
+      category: 'utility',
+      cooldown: 10,
+      owner_only: false,
+    },
+    {
+      name: 'toimg',
+      description: 'Convert sticker to image',
+      aliases: ['toimage'],
+      category: 'utility',
+      cooldown: 10,
+      owner_only: false,
+    },
+    {
+      name: 'ban',
+      description: 'Ban a user from using the bot',
+      aliases: [],
+      category: 'admin',
+      cooldown: 0,
+      owner_only: true,
+    },
+    {
+      name: 'unban',
+      description: 'Unban a previously banned user',
+      aliases: [],
+      category: 'admin',
+      cooldown: 0,
+      owner_only: true,
+    },
+    {
+      name: 'broadcast',
+      description: 'Send a message to all users',
+      aliases: ['bc'],
+      category: 'owner',
+      cooldown: 60,
+      owner_only: true,
+    },
+    {
+      name: 'restart',
+      description: 'Restart the bot',
+      aliases: [],
+      category: 'owner',
+      cooldown: 0,
+      owner_only: true,
+    },
+    {
+      name: 'joke',
+      description: 'Get a random joke',
+      aliases: [],
+      category: 'fun',
+      cooldown: 5,
+      owner_only: false,
+    },
+    {
+      name: 'quote',
+      description: 'Get a random inspirational quote',
+      aliases: [],
+      category: 'fun',
+      cooldown: 5,
+      owner_only: false,
+    },
+  ];
+
+  for (const cmd of defaultCommands) {
+    // Only insert if command doesn't exist
+    const existing = getCommandByName(cmd.name);
+    if (!existing) {
+      upsertCommand(cmd);
+    }
+  }
 }

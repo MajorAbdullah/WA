@@ -73,6 +73,22 @@ export function initializeSchema(db: Database.Database): void {
     )
   `);
 
+  // Create commands table for storing command configurations
+  db.exec(`
+    CREATE TABLE IF NOT EXISTS commands (
+      name TEXT PRIMARY KEY,
+      description TEXT NOT NULL,
+      aliases TEXT DEFAULT '[]',
+      category TEXT NOT NULL DEFAULT 'general',
+      cooldown INTEGER NOT NULL DEFAULT 5,
+      owner_only INTEGER NOT NULL DEFAULT 0,
+      enabled INTEGER NOT NULL DEFAULT 1,
+      usage_count INTEGER DEFAULT 0,
+      created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+      updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
+    )
+  `);
+
   // Create indexes for frequently queried columns
   createIndexes(db);
 }
@@ -108,6 +124,12 @@ function createIndexes(db: Database.Database): void {
     CREATE INDEX IF NOT EXISTS idx_command_logs_command ON command_logs(command);
     CREATE INDEX IF NOT EXISTS idx_command_logs_user_jid ON command_logs(user_jid);
     CREATE INDEX IF NOT EXISTS idx_command_logs_created_at ON command_logs(created_at DESC);
+  `);
+
+  // Commands indexes
+  db.exec(`
+    CREATE INDEX IF NOT EXISTS idx_commands_category ON commands(category);
+    CREATE INDEX IF NOT EXISTS idx_commands_enabled ON commands(enabled);
   `);
 }
 

@@ -54,6 +54,21 @@ export interface Setting {
   updated_at: string;
 }
 
+export interface Command {
+  name: string;
+  description: string;
+  aliases: string; // JSON array stored as string
+  category: CommandCategory;
+  cooldown: number;
+  owner_only: boolean;
+  enabled: boolean;
+  usage_count: number;
+  created_at: string;
+  updated_at: string;
+}
+
+export type CommandCategory = 'general' | 'admin' | 'owner' | 'utility' | 'fun';
+
 // Input types for creating new records
 export interface CreateMessageInput {
   id: string;
@@ -87,6 +102,21 @@ export interface CreateCommandLogInput {
   args?: string | null;
   success: boolean;
   response_time?: number | null;
+}
+
+export interface CreateCommandInput {
+  name: string;
+  description: string;
+  aliases?: string[];
+  category?: CommandCategory;
+  cooldown?: number;
+  owner_only?: boolean;
+  enabled?: boolean;
+}
+
+export interface UpdateCommandInput {
+  enabled?: boolean;
+  cooldown?: number;
 }
 
 // Query filter types
