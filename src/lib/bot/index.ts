@@ -14,6 +14,7 @@ import type {
 } from '@/types/bot';
 import { getBotEvents } from './events';
 import * as adapter from './adapter';
+import QRCode from 'qrcode';
 
 /**
  * Bot Manager Class
@@ -78,18 +79,32 @@ class BotManager {
   /**
    * Handle connection state updates
    */
-  private handleConnectionUpdate(update: {
+  private async handleConnectionUpdate(update: {
     connection?: string;
     lastDisconnect?: { error?: Error };
     qr?: string;
-  }): void {
+  }): Promise<void> {
     const events = getBotEvents();
 
     if (update.qr) {
-      this.state.qrCode = update.qr;
-      this.state.status = 'connecting';
-      events.emitQRCode(update.qr);
-      events.emitConnectionChange('connecting');
+      // Convert QR string to data URL for display in browser
+      try {
+        const qrDataUrl = await QRCode.toDataURL(update.qr, {
+          width: 256,
+          margin: 2,
+          color: {
+            dark: '#000000',
+            light: '#ffffff',
+          },
+        });
+        this.state.qrCode = qrDataUrl;
+        this.state.status = 'connecting';
+        events.emitQRCode(qrDataUrl);
+        events.emitConnectionChange('connecting');
+        console.log('[Bot Manager] QR code generated and emitted');
+      } catch (err) {
+        console.error('[Bot Manager] Failed to generate QR code:', err);
+      }
     }
 
     if (update.connection === 'open') {
