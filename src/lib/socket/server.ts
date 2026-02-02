@@ -17,6 +17,7 @@ import type {
   SendMessageData,
 } from './events';
 import { ROOMS, EVENTS } from './events';
+import { getBotManager, getBotEvents } from '@/lib/bot';
 
 // =============================================================================
 // Singleton Socket Server Manager
@@ -196,24 +197,71 @@ class SocketServerManager {
   // Bot Event Handlers (to be integrated with Bot Service in Phase 2B)
   // =============================================================================
 
-  private handleBotConnect(options?: { usePairingCode?: boolean; phoneNumber?: string }): void {
+  private async handleBotConnect(options?: { usePairingCode?: boolean; phoneNumber?: string }): Promise<void> {
     // Update state to connecting
     this.updateBotState({ status: 'connecting' });
 
-    // This will be integrated with the bot service in Phase 2B
-    // For now, emit a placeholder event
     console.log('[Socket.IO] Bot connection initiated', options);
+
+    try {
+      const botManager = getBotManager();
+      const botEvents = getBotEvents();
+
+      // Subscribe to bot events to relay to clients
+      botEvents.onQRCode((qr) => {
+        console.log('[Socket.IO] QR Code received');
+        this.emitQRCode(qr);
+      });
+
+      botEvents.onConnectionChange((status, phoneNumber) => {
+        console.log('[Socket.IO] Connection status changed:', status, phoneNumber);
+        this.updateBotState({
+          status,
+          phoneNumber: phoneNumber || null,
+          qrCode: status === 'connected' ? null : this.currentBotState.qrCode,
+        });
+      });
+
+      botEvents.onPairingCode((code) => {
+        console.log('[Socket.IO] Pairing code received:', code);
+        this.emitPairingCode(code);
+      });
+
+      botEvents.onStatsUpdate((stats) => {
+        this.updateStats({
+          messagesReceived: stats.messagesReceived,
+          messagesSent: stats.messagesSent,
+          commandsExecuted: stats.commandsExecuted,
+          errors: stats.errors,
+          uptime: stats.uptime,
+        });
+      });
+
+      // Connect with options (phone number for pairing code)
+      await botManager.connect(options);
+    } catch (error) {
+      console.error('[Socket.IO] Bot connection error:', error);
+      this.updateBotState({ status: 'disconnected' });
+      this.emitError('CONNECTION_ERROR', error instanceof Error ? error.message : 'Failed to connect');
+    }
   }
 
-  private handleBotDisconnect(): void {
-    // Update state to disconnected
-    this.updateBotState({
-      status: 'disconnected',
-      qrCode: null,
-      pairingCode: null,
-    });
-
+  private async handleBotDisconnect(): Promise<void> {
     console.log('[Socket.IO] Bot disconnection initiated');
+
+    try {
+      const botManager = getBotManager();
+      await botManager.disconnect();
+
+      this.updateBotState({
+        status: 'disconnected',
+        qrCode: null,
+        pairingCode: null,
+      });
+    } catch (error) {
+      console.error('[Socket.IO] Bot disconnection error:', error);
+      this.emitError('DISCONNECT_ERROR', error instanceof Error ? error.message : 'Failed to disconnect');
+    }
   }
 
   private handleSendMessage(socket: TypedSocket, data: SendMessageData): void {

@@ -193,7 +193,7 @@ class BotManager {
   /**
    * Connect the bot to WhatsApp
    */
-  public async connect(): Promise<void> {
+  public async connect(options?: { usePairingCode?: boolean; phoneNumber?: string }): Promise<void> {
     if (this.state.status === 'connected') {
       return;
     }
@@ -204,7 +204,7 @@ class BotManager {
     getBotEvents().emitConnectionChange('connecting');
 
     try {
-      await adapter.startBot();
+      await adapter.startBot(options);
     } catch (error) {
       this.state.status = 'disconnected';
       getBotEvents().emitConnectionChange('disconnected');

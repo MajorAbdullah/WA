@@ -1,8 +1,11 @@
 'use client';
 
+import { useState } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 import { Skeleton } from '@/components/ui/skeleton';
 import {
   Wifi,
@@ -12,6 +15,7 @@ import {
   PowerOff,
   Phone,
   QrCode,
+  Smartphone,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { QRDisplay } from './qr-display';
@@ -110,6 +114,17 @@ export function ConnectionStatus({
   loading = false,
   className,
 }: ConnectionStatusProps) {
+  const [usePairingCode, setUsePairingCode] = useState(false);
+  const [inputPhoneNumber, setInputPhoneNumber] = useState('');
+
+  const handleConnect = () => {
+    if (usePairingCode && inputPhoneNumber) {
+      onConnect({ usePairingCode: true, phoneNumber: inputPhoneNumber });
+    } else {
+      onConnect();
+    }
+  };
+
   if (loading) {
     return (
       <Card className={className}>
@@ -187,6 +202,7 @@ export function ConnectionStatus({
               qrCode={qrCode}
               pairingCode={pairingCode}
               onRefresh={() => onConnect()}
+              onUsePairingCode={() => setUsePairingCode(true)}
             />
           </div>
         </CardContent>
@@ -198,21 +214,71 @@ export function ConnectionStatus({
   return (
     <Card className={className}>
       <CardContent className="p-6">
-        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-          <div className="flex items-center gap-4">
-            <StatusIcon status={status} />
-            <div>
-              <h3 className="font-semibold">Bot Disconnected</h3>
-              <p className="text-sm text-muted-foreground">
-                Connect to WhatsApp to start using the bot
-              </p>
+        <div className="flex flex-col gap-6">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+            <div className="flex items-center gap-4">
+              <StatusIcon status={status} />
+              <div>
+                <h3 className="font-semibold">Bot Disconnected</h3>
+                <p className="text-sm text-muted-foreground">
+                  Connect to WhatsApp to start using the bot
+                </p>
+              </div>
             </div>
-          </div>
-          <div className="flex items-center gap-3">
             <StatusBadge status={status} />
-            <Button onClick={() => onConnect()}>
+          </div>
+
+          {/* Connection Options */}
+          <div className="space-y-4">
+            {/* Toggle between QR and Pairing Code */}
+            <div className="flex gap-2">
+              <Button
+                variant={!usePairingCode ? 'default' : 'outline'}
+                size="sm"
+                onClick={() => setUsePairingCode(false)}
+              >
+                <QrCode className="mr-2 h-4 w-4" />
+                QR Code
+              </Button>
+              <Button
+                variant={usePairingCode ? 'default' : 'outline'}
+                size="sm"
+                onClick={() => setUsePairingCode(true)}
+              >
+                <Smartphone className="mr-2 h-4 w-4" />
+                Pairing Code
+              </Button>
+            </div>
+
+            {/* Pairing Code - Phone Number Input */}
+            {usePairingCode && (
+              <div className="space-y-2">
+                <Label htmlFor="phoneNumber">WhatsApp Phone Number</Label>
+                <div className="flex gap-2">
+                  <Input
+                    id="phoneNumber"
+                    type="tel"
+                    placeholder="e.g., 923314378123 (with country code)"
+                    value={inputPhoneNumber}
+                    onChange={(e) => setInputPhoneNumber(e.target.value.replace(/\D/g, ''))}
+                    className="flex-1"
+                  />
+                </div>
+                <p className="text-xs text-muted-foreground">
+                  Enter your phone number with country code (no + or spaces).
+                  A pairing code will be generated for you to enter in WhatsApp.
+                </p>
+              </div>
+            )}
+
+            {/* Connect Button */}
+            <Button
+              onClick={handleConnect}
+              disabled={usePairingCode && !inputPhoneNumber}
+              className="w-full sm:w-auto"
+            >
               <Power className="mr-2 h-4 w-4" />
-              Connect
+              {usePairingCode ? 'Connect with Pairing Code' : 'Connect with QR Code'}
             </Button>
           </div>
         </div>

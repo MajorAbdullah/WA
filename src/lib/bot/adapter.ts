@@ -84,8 +84,15 @@ function convertUser(cliUser: {
 /**
  * Start the bot and connect to WhatsApp
  */
-export async function startBot(): Promise<void> {
+export async function startBot(options?: { usePairingCode?: boolean; phoneNumber?: string }): Promise<void> {
   await loadCLIModules();
+
+  // If phone number provided, use pairing code authentication
+  if (options?.phoneNumber) {
+    // Set the phone number for pairing code auth
+    process.env.PHONE_NUMBER = options.phoneNumber;
+  }
+
   await cliClient!.startBot();
 }
 

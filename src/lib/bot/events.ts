@@ -144,6 +144,43 @@ class BotEventEmitter {
   emitError(error: Error, context?: string): void {
     this.emit('error', { error, context });
   }
+
+  // Convenience subscription methods
+
+  /**
+   * Subscribe to QR code updates
+   */
+  onQRCode(listener: (qrCode: string) => void): void {
+    this.on('qr', ({ qrCode }) => listener(qrCode));
+  }
+
+  /**
+   * Subscribe to pairing code updates
+   */
+  onPairingCode(listener: (code: string) => void): void {
+    this.on('pairing-code', ({ code }) => listener(code));
+  }
+
+  /**
+   * Subscribe to connection changes
+   */
+  onConnectionChange(listener: (status: ConnectionStatus, phoneNumber?: string) => void): void {
+    this.on('connection', ({ status, phoneNumber }) => listener(status, phoneNumber));
+  }
+
+  /**
+   * Subscribe to stats updates
+   */
+  onStatsUpdate(listener: (stats: BotStats) => void): void {
+    this.on('stats:update', ({ stats }) => listener(stats));
+  }
+
+  /**
+   * Subscribe to errors
+   */
+  onError(listener: (error: Error, context?: string) => void): void {
+    this.on('error', ({ error, context }) => listener(error, context));
+  }
 }
 
 // Singleton instance
