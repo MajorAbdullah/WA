@@ -23,7 +23,8 @@ import {
   AlertTriangle,
 } from 'lucide-react';
 import Link from 'next/link';
-import { useSettings, type RateLimitConfig, type ResponseConfig } from '@/hooks/use-settings';
+import { useSettings } from '@/hooks/use-settings';
+import { toast } from 'sonner';
 
 // =============================================================================
 // Form Schema
@@ -112,14 +113,22 @@ export default function RateLimitSettingsPage() {
 
     if (rateLimitSuccess && responseSuccess) {
       reset(data);
+      toast.success('Rate limiting settings saved successfully');
+    } else {
+      toast.error('Failed to save settings');
     }
   };
 
   // Handle reset to defaults
   const handleReset = async () => {
     if (confirm('Reset rate limiting and response settings to defaults?')) {
-      await resetConfig('rateLimit');
-      await resetConfig('response');
+      const rateLimitResult = await resetConfig('rateLimit');
+      const responseResult = await resetConfig('response');
+      if (rateLimitResult && responseResult) {
+        toast.success('Settings reset to defaults');
+      } else {
+        toast.error('Failed to reset settings');
+      }
     }
   };
 

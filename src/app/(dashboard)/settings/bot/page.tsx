@@ -24,7 +24,8 @@ import {
   Info,
 } from 'lucide-react';
 import Link from 'next/link';
-import { useSettings, type BotConfig } from '@/hooks/use-settings';
+import { useSettings } from '@/hooks/use-settings';
+import { toast } from 'sonner';
 
 // =============================================================================
 // Form Schema
@@ -87,6 +88,9 @@ export default function BotSettingsPage() {
     const success = await updateBotConfig(data);
     if (success) {
       reset(data);
+      toast.success('Bot configuration saved successfully');
+    } else {
+      toast.error('Failed to save configuration');
     }
   };
 
@@ -96,6 +100,9 @@ export default function BotSettingsPage() {
       const success = await resetConfig('bot');
       if (success && config?.bot) {
         reset(config.bot);
+        toast.success('Configuration reset to defaults');
+      } else {
+        toast.error('Failed to reset configuration');
       }
     }
   };

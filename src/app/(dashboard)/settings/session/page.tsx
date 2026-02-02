@@ -27,6 +27,7 @@ import {
 } from 'lucide-react';
 import { useBotStatus } from '@/hooks/use-bot-status';
 import { formatUptime } from '@/hooks/use-stats';
+import { toast } from 'sonner';
 
 // =============================================================================
 // Session Info Card Component
@@ -77,6 +78,7 @@ export default function SessionSettingsPage() {
     setActionLoading('logout');
     try {
       disconnect();
+      toast.success('Disconnected from WhatsApp');
     } finally {
       setActionLoading(null);
     }
@@ -88,7 +90,7 @@ export default function SessionSettingsPage() {
     try {
       // This would typically call an API to backup the session
       await new Promise((resolve) => setTimeout(resolve, 1000));
-      alert('Session backup feature coming soon!');
+      toast.info('Session backup feature coming soon!');
     } finally {
       setActionLoading(null);
     }
@@ -105,7 +107,7 @@ export default function SessionSettingsPage() {
       // This would typically call an API to clear the session
       disconnect();
       await new Promise((resolve) => setTimeout(resolve, 1000));
-      alert('Session cleared. Please reconnect by scanning the QR code.');
+      toast.success('Session cleared. Please reconnect by scanning the QR code.');
     } finally {
       setActionLoading(null);
     }

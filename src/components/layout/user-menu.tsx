@@ -1,6 +1,8 @@
 "use client";
 
-import { User, Settings, LogOut, Moon, Sun, Monitor } from "lucide-react";
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+import { User, Settings, LogOut, Moon, Sun, Monitor, Loader2 } from "lucide-react";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import {
   DropdownMenu,
@@ -15,6 +17,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
 import { useTheme } from "next-themes";
+import { toast } from "sonner";
 
 interface UserMenuProps {
   user?: {
@@ -24,7 +27,9 @@ interface UserMenuProps {
 }
 
 export function UserMenu({ user = { name: "Admin", email: "admin@example.com" } }: UserMenuProps) {
-  const { setTheme, theme } = useTheme();
+  const { setTheme } = useTheme();
+  const router = useRouter();
+  const [isLoggingOut, setIsLoggingOut] = useState(false);
 
   const initials = user.name
     .split(" ")
@@ -32,6 +37,28 @@ export function UserMenu({ user = { name: "Admin", email: "admin@example.com" } 
     .join("")
     .toUpperCase()
     .slice(0, 2);
+
+  const handleLogout = async () => {
+    setIsLoggingOut(true);
+    try {
+      const response = await fetch("/api/auth/logout", {
+        method: "POST",
+      });
+
+      if (!response.ok) {
+        throw new Error("Logout failed");
+      }
+
+      toast.success("Logged out successfully");
+      router.push("/login");
+      router.refresh();
+    } catch (error) {
+      console.error("Logout error:", error);
+      toast.error("Failed to log out");
+    } finally {
+      setIsLoggingOut(false);
+    }
+  };
 
   return (
     <DropdownMenu>
@@ -60,7 +87,7 @@ export function UserMenu({ user = { name: "Admin", email: "admin@example.com" } 
           <User className="mr-2 h-4 w-4" />
           <span>Profile</span>
         </DropdownMenuItem>
-        <DropdownMenuItem>
+        <DropdownMenuItem onClick={() => router.push("/settings")}>
           <Settings className="mr-2 h-4 w-4" />
           <span>Settings</span>
         </DropdownMenuItem>
@@ -86,9 +113,17 @@ export function UserMenu({ user = { name: "Admin", email: "admin@example.com" } 
           </DropdownMenuSubContent>
         </DropdownMenuSub>
         <DropdownMenuSeparator />
-        <DropdownMenuItem className="text-destructive focus:text-destructive">
-          <LogOut className="mr-2 h-4 w-4" />
-          <span>Log out</span>
+        <DropdownMenuItem
+          className="text-destructive focus:text-destructive"
+          onClick={handleLogout}
+          disabled={isLoggingOut}
+        >
+          {isLoggingOut ? (
+            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+          ) : (
+            <LogOut className="mr-2 h-4 w-4" />
+          )}
+          <span>{isLoggingOut ? "Logging out..." : "Log out"}</span>
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>

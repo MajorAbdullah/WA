@@ -4,6 +4,7 @@ import { Sidebar } from "@/components/layout/sidebar";
 import { Header } from "@/components/layout/header";
 import { MainContent } from "@/components/layout/main-content";
 import { TooltipProvider } from "@/components/ui/tooltip";
+import { CommandPalette } from "@/components/shared/command-palette";
 
 interface DashboardLayoutProps {
   children: React.ReactNode;
@@ -26,6 +27,9 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
             {children}
           </main>
         </MainContent>
+
+        {/* Command Palette (Cmd+K) */}
+        <CommandPalette />
       </div>
     </TooltipProvider>
   );

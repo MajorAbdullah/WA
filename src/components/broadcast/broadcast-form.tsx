@@ -29,6 +29,7 @@ import {
   Clock,
   AlertTriangle,
 } from 'lucide-react';
+import { toast } from 'sonner';
 
 type RecipientType = 'all' | 'groups' | 'custom';
 
@@ -146,10 +147,17 @@ export function BroadcastForm({ onSuccess }: BroadcastFormProps) {
       }
 
       setConfirmDialogOpen(false);
+      toast.success(
+        scheduleType === 'now'
+          ? 'Broadcast started successfully'
+          : 'Broadcast scheduled successfully'
+      );
       onSuccess?.();
       router.push('/broadcast');
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'An error occurred');
+      const errorMessage = err instanceof Error ? err.message : 'An error occurred';
+      setError(errorMessage);
+      toast.error(errorMessage);
     } finally {
       setSubmitting(false);
     }
