@@ -1,0 +1,45 @@
+# =============================================================================
+# WA Bot Dashboard - Docker Compose
+# =============================================================================
+# Usage:
+#   Development: docker-compose up
+#   Production:  docker-compose -f docker-compose.yml -f docker-compose.prod.yml up
+# =============================================================================
+
+services:
+  # ---------------------------------------------------------------------------
+  # WA Bot Dashboard
+  # ---------------------------------------------------------------------------
+  dashboard:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: wa-bot-dashboard
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=production
+      - AUTH_SECRET=${AUTH_SECRET}
+      - ADMIN_USERNAME=${ADMIN_USERNAME:-admin}
+      - ADMIN_PASSWORD=${ADMIN_PASSWORD}
+      - BOT_NAME=${BOT_NAME:-WhatsApp Bot}
+      - BOT_PREFIX=${BOT_PREFIX:-!}
+      - BOT_OWNER=${BOT_OWNER}
+      - DATABASE_URL=file:/app/data/bot.db
+    volumes:
+      # Persist database and session data
+      - wa-bot-data:/app/data
+    healthcheck:
+      test: ["CMD", "wget", "-q", "--spider", "http://localhost:3000/api/auth/me"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+# -----------------------------------------------------------------------------
+# Volumes
+# -----------------------------------------------------------------------------
+volumes:
+  wa-bot-data:
+    driver: local
