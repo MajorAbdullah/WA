@@ -58,13 +58,17 @@ class BotManager {
    */
   public async initialize(): Promise<void> {
     if (this.isInitialized) {
+      console.log('[Bot Manager] Already initialized, skipping');
       return;
     }
 
+    console.log('[Bot Manager] Initializing...');
     const events = getBotEvents();
 
     // Set up connection callback
+    console.log('[Bot Manager] Setting up connection callback...');
     await adapter.setConnectionCallback((update) => {
+      console.log('[Bot Manager] Connection callback invoked!');
       this.handleConnectionUpdate(update);
     });
 
@@ -85,6 +89,9 @@ class BotManager {
     qr?: string;
   }): Promise<void> {
     const events = getBotEvents();
+
+    // Debug: Log what we receive
+    console.log('[Bot Manager] Connection update received:', JSON.stringify(update, null, 2));
 
     if (update.qr) {
       // Convert QR string to data URL for display in browser

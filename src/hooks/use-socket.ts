@@ -104,7 +104,8 @@ export function useSocket(options: UseSocketOptions = {}): UseSocketReturn {
   const connect = useCallback(() => {
     if (socketRef.current?.connected) return;
 
-    const socketUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000';
+    // Use current page origin for Socket.IO to work across different hosts
+    const socketUrl = typeof window !== 'undefined' ? window.location.origin : '';
 
     socketRef.current = io(socketUrl, {
       path: '/api/socket',

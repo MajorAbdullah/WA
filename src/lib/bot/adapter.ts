@@ -132,10 +132,15 @@ export async function getSocket() {
  * Set callback for connection state changes
  */
 export async function setConnectionCallback(
-  callback: (state: { connection?: string; lastDisconnect?: { error?: Error } }) => void
+  callback: (state: { connection?: string; lastDisconnect?: { error?: Error }; qr?: string }) => void
 ): Promise<void> {
   await loadCLIModules();
-  cliClient!.setConnectionCallback(callback);
+  console.log('[Bot Adapter] Setting connection callback...');
+  cliClient!.setConnectionCallback((state: unknown) => {
+    console.log('[Bot Adapter] Connection callback received:', JSON.stringify(state));
+    callback(state as { connection?: string; lastDisconnect?: { error?: Error }; qr?: string });
+  });
+  console.log('[Bot Adapter] Connection callback set');
 }
 
 /**
